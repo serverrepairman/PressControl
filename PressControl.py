@@ -12,4 +12,6 @@ for i in range(0, 1):
     Frames[i+1].title("frame"+ str(i))
     root.update()
 
+Frames[1].canvas.bind("<Down>", Frames[1].down_clicked)
+
 root.mainloop()

@@ -56,13 +56,17 @@ class GameWindow(tk.Toplevel):
                                            GameWindow.button_width_arrow, GameWindow.button_height_arrow,
                                            self.right_clicked, GameWindow.width_ratio, 1, GameWindow.height_ratio, 0
                                            )
-        self.buttons['Next'] = GameButton(self, "./img/Right.png",
-                                          GameWindow.button_width_arrow, GameWindow.button_height_arrow,
-                                          self.right_clicked, GameWindow.width_ratio, 1, GameWindow.height_ratio, 0
+        self.buttons['Delete'] = GameButton(self, "./img/Delete.png",
+                                            GameWindow.button_width_arrow, GameWindow.button_height_arrow,
+                                            self.right_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, 0
+                                            )
+        self.buttons['Next'] = GameButton(self, "./img/Next.png",
+                                          GameWindow.button_width_next, GameWindow.button_height_next,
+                                          self.right_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
-        self.buttons['Delete'] = GameButton(self, "./img/Right.png",
-                                            GameWindow.button_width_next, GameWindow.button_height_next,
-                                            self.right_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
+        self.buttons['Player'] = Player(self, "./img/Player.png",
+                                            GameWindow.button_width_next / 2, GameWindow.button_height_next / 2,
+                                            self.refresh_canvas, 0, 0, 0, 0
                                             )
 
     def refresh_canvas(self):
@@ -136,11 +140,28 @@ class GameButton:
         self.height = int(self.root.cal_height(self.initial_height))
         self.x = self.root.width * self.width_c + self.width * self.btn_width_c
         self.y = self.root.height * self.height_c + self.height * self.btn_height_c
+        if self.x < 0:
+            self.x = 0
+        if self.x > self.root.width:
+            self.x = self.root.width
+        if self.y < 0:
+            self.y = 0
+        if self.y > self.root.height:
+            self.y = self.root.height
 
         self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.img)
+        self.is_clicked()
 
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
 
+    def is_clicked(self, player):
+        if abs(self.root.player_x - self.x) <= (self.width + self.root.player_width)/2 and \
+                abs(self.root.player_y - self.y) <= (self.height + self.root.player_height)/2:
+            self.clicked()
+
     def clicked(self):
         self.command(self.root)
+
+class Player(GameButton):
+    pass
