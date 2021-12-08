@@ -25,7 +25,6 @@ class GameWindow(tk.Toplevel):
         self.canvas = Canvas(self, bd=0, highlightthickness=0)
         self.canvas.pack(fill=BOTH, expand=1)
 
-        self.next_exist = False
         self.next_window = None
         self.player = None
 
@@ -83,6 +82,7 @@ class GameWindow(tk.Toplevel):
         return origin_height * self.height / GameWindow.initial_height
 
     def next_clicked(self):
+        print("next")
         self.next_window = GameWindow(self)
 
     def right_clicked(self):
@@ -90,18 +90,23 @@ class GameWindow(tk.Toplevel):
             self.next_window.player.right()
 
     def left_clicked(self):
+        print("left")
         if self.next_window is not None:
             self.next_window.player.left()
 
     def up_clicked(self):
+        print("up")
         if self.next_window is not None:
+            print("up2")
             self.next_window.player.up()
 
     def down_clicked(self):
+        print("down")
         if self.next_window is not None:
             self.next_window.player.down()
 
     def delete_clicked(self):
+        print("delete")
         self.destroy()
 
 
@@ -142,7 +147,7 @@ class GameButton:
             self.clicked()
 
     def clicked(self):
-        self.command(self.root)
+        self.command()
 
 
 class Player:
@@ -158,23 +163,23 @@ class Player:
 
         self.img = self.img_origin = Image.open(img_path)
         self.photo = ImageTk.PhotoImage(self.img)
-        self.update()
+        self.root.refresh_canvas()
 
     def right(self):
         self.origin_x += self.origin_v
-        self.update()
+        self.root.refresh_canvas()
 
     def left(self):
         self.origin_x -= self.origin_v
-        self.update()
+        self.root.refresh_canvas()
 
     def up(self):
         self.origin_y -= self.origin_v
-        self.update()
+        self.root.refresh_canvas()
 
     def down(self):
         self.origin_y += self.origin_v
-        self.update()
+        self.root.refresh_canvas()
 
     def update(self):
         if self.origin_x < self.initial_width / 2:
@@ -194,5 +199,3 @@ class Player:
         self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.img)
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
-
-        self.root.update()
