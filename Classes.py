@@ -30,7 +30,7 @@ class GameWindow(tk.Toplevel):
         self.width = self.winfo_screenwidth()
         self.height = self.winfo_screenheight()
 
-        self.player_x = self.player_width/2
+        self.player_x = self.player_width / 2
         self.player_y = self.player_height / 2
         self.player_v = self.width / 100
 
@@ -64,65 +64,6 @@ class GameWindow(tk.Toplevel):
                                             GameWindow.button_width_next, GameWindow.button_height_next,
                                             self.right_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                             )
-
-    # def load_images(self):
-    #     self.img_Up = load_img("./img/Up.png",
-    #                            self.cal_width(GameWindow.button_width_arrow),
-    #                            self.cal_height(GameWindow.button_height_arrow)
-    #                            )
-    #     self.img_Down = load_img("./img/Down.png",
-    #                              self.cal_width(GameWindow.button_width_arrow),
-    #                              self.cal_height(GameWindow.button_height_arrow)
-    #                              )
-    #     self.img_Left = load_img("./img/Left.png",
-    #                              self.cal_width(GameWindow.button_width_arrow),
-    #                              self.cal_height(GameWindow.button_height_arrow)
-    #                              )
-    #     self.img_Right = load_img("./img/Right.png",
-    #                               self.cal_width(GameWindow.button_width_arrow),
-    #                               self.cal_height(GameWindow.button_height_arrow)
-    #                               )
-    #     self.img_Delete = load_img("./img/Delete.png",
-    #                                self.cal_width(GameWindow.button_width_arrow),
-    #                                self.cal_height(GameWindow.button_height_arrow)
-    #                                )
-    #     self.img_Next = load_img("./img/Next.png",
-    #                              self.cal_width(GameWindow.button_width_next),
-    #                              self.cal_height(GameWindow.button_height_next)
-    #                              )
-
-    # def draw_images(self):
-    #     self.canvas.create_image(
-    #         self.width / GameWindow.width_ratio,
-    #         self.height / 2 - self.cal_height(GameWindow.button_height_arrow),
-    #         image=self.img_Up
-    #     )
-    #     self.canvas.create_image(
-    #         self.width / GameWindow.width_ratio,
-    #         self.height / 2 + self.cal_height(GameWindow.button_height_arrow),
-    #         image=self.img_Down
-    #     )
-    #     self.canvas.create_image(
-    #         self.width / GameWindow.width_ratio - self.cal_width(GameWindow.button_width_arrow),
-    #         self.height / 2,
-    #         image=self.img_Left
-    #     )
-    #     self.canvas.create_image(
-    #         self.width / GameWindow.width_ratio + self.cal_width(GameWindow.button_width_arrow),
-    #         self.height / 2,
-    #         image=self.img_Right
-    #     )
-    #     self.canvas.create_image(
-    #         self.width / GameWindow.width_ratio,
-    #         self.height / 2,
-    #         image=self.img_Delete
-    #     )
-    #     if self.next_exist is False:
-    #         self.canvas.create_image(
-    #             self.width / GameWindow.width_ratio + self.cal_width(GameWindow.button_width_next) * 1.2,
-    #             self.height / 2,
-    #             image=self.img_Next
-    #         )
 
     def refresh_canvas(self):
         self.canvas.delete("all")
