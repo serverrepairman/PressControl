@@ -7,11 +7,13 @@ Frames = []
 
 root = tk.Tk()
 Frames.append(root)
-for i in range(0, 1):
-    Frames.append(GameWindow(Frames[i]))
-    Frames[i+1].title("frame"+ str(i))
-    root.update()
+Frames.append(GameWindow(Frames[0]))
+Frames[1].title("frame"+ str(1))
+root.update()
 
-Frames[1].canvas.bind("<Down>", Frames[1].down_clicked)
+Frames[1].canvas.bind_all('<KeyPress-Down>', lambda x: Frames[1].player.down())
+Frames[1].canvas.bind_all('<KeyPress-Up>', lambda x: Frames[1].player.up())
+Frames[1].canvas.bind_all('<KeyPress-Left>', lambda x: Frames[1].player.left())
+Frames[1].canvas.bind_all('<KeyPress-Right>', lambda x: Frames[1].player.right())
 
 root.mainloop()

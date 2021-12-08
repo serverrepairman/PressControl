@@ -26,13 +26,11 @@ class GameWindow(tk.Toplevel):
         self.canvas.pack(fill=BOTH, expand=1)
 
         self.next_exist = False
+        self.next_window = None
+        self.player = None
 
         self.width = self.winfo_screenwidth()
         self.height = self.winfo_screenheight()
-
-        self.player_x = self.player_width / 2
-        self.player_y = self.player_height / 2
-        self.player_v = self.width / 100
 
         self.buttons = {}
         self.make_buttons()
@@ -40,6 +38,9 @@ class GameWindow(tk.Toplevel):
         self.canvas.bind("<Configure>", self.config_listener)
 
     def make_buttons(self):
+        self.player = self.buttons['Player'] = Player(self, "./img/Player.png", self.player_width, self.player_height,
+                                                      self.player_width / 2, self.player_height / 2, 5)
+
         self.buttons['Up'] = GameButton(self, "./img/Up.png",
                                         GameWindow.button_width_arrow, GameWindow.button_height_arrow,
                                         self.up_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, -1
@@ -64,10 +65,6 @@ class GameWindow(tk.Toplevel):
                                           GameWindow.button_width_next, GameWindow.button_height_next,
                                           self.right_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
-        self.buttons['Player'] = Player(self, "./img/Player.png",
-                                            GameWindow.button_width_next / 2, GameWindow.button_height_next / 2,
-                                            self.refresh_canvas, 0, 0, 0, 0
-                                            )
 
     def refresh_canvas(self):
         self.canvas.delete("all")
@@ -89,28 +86,20 @@ class GameWindow(tk.Toplevel):
         self.next_window = GameWindow(self)
 
     def right_clicked(self):
-        self.next_window.right_received()
-
-    def right_received(self):
-        self.player_x += self.player_v
+        if self.next_window is not None:
+            self.next_window.player.right()
 
     def left_clicked(self):
-        self.next_window.left_received()
-
-    def left_received(self):
-        self.player_x -= self.player_v
+        if self.next_window is not None:
+            self.next_window.player.left()
 
     def up_clicked(self):
-        self.next_window.up_received()
-
-    def up_received(self):
-        self.player_y -= self.player_v
+        if self.next_window is not None:
+            self.next_window.player.up()
 
     def down_clicked(self):
-        self.next_window.down_received()
-
-    def down_received(self):
-        self.player_y += self.player_v
+        if self.next_window is not None:
+            self.next_window.player.down()
 
     def delete_clicked(self):
         self.destroy()
@@ -140,14 +129,6 @@ class GameButton:
         self.height = int(self.root.cal_height(self.initial_height))
         self.x = self.root.width * self.width_c + self.width * self.btn_width_c
         self.y = self.root.height * self.height_c + self.height * self.btn_height_c
-        if self.x < 0:
-            self.x = 0
-        if self.x > self.root.width:
-            self.x = self.root.width
-        if self.y < 0:
-            self.y = 0
-        if self.y > self.root.height:
-            self.y = self.root.height
 
         self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.img)
@@ -155,13 +136,63 @@ class GameButton:
 
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
 
-    def is_clicked(self, player):
-        if abs(self.root.player_x - self.x) <= (self.width + self.root.player_width)/2 and \
-                abs(self.root.player_y - self.y) <= (self.height + self.root.player_height)/2:
+    def is_clicked(self):
+        if abs(self.root.player.x - self.x) <= (self.width + self.root.player.width)/2 and \
+                abs(self.root.player.y - self.y) <= (self.height + self.root.player.height)/2:
             self.clicked()
 
     def clicked(self):
         self.command(self.root)
 
-class Player(GameButton):
-    pass
+
+class Player:
+    def __init__(self, root, img_path, width, height, initial_x, initial_y, initial_v):
+        self.root = root
+        self.img_path = img_path
+
+        self.initial_width = self.width = int(width)
+        self.initial_height = self.height = int(height)
+        self.x = self.origin_x = initial_x
+        self.y = self.origin_y = initial_y
+        self.origin_v = initial_v
+
+        self.img = self.img_origin = Image.open(img_path)
+        self.photo = ImageTk.PhotoImage(self.img)
+        self.update()
+
+    def right(self):
+        self.origin_x += self.origin_v
+        self.update()
+
+    def left(self):
+        self.origin_x -= self.origin_v
+        self.update()
+
+    def up(self):
+        self.origin_y -= self.origin_v
+        self.update()
+
+    def down(self):
+        self.origin_y += self.origin_v
+        self.update()
+
+    def update(self):
+        if self.origin_x < self.initial_width / 2:
+            self.origin_x = self.initial_width / 2
+        if self.origin_x > self.root.initial_width - self.initial_width / 2:
+            self.origin_x = self.root.initial_width - self.initial_width / 2
+        if self.origin_y < self.initial_height / 2:
+            self.origin_y = self.initial_height / 2
+        if self.origin_y > self.root.initial_height - self.initial_height / 2:
+            self.origin_y = self.root.initial_height - self.initial_height / 2
+
+        self.x = self.root.cal_width(self.origin_x)
+        self.y = self.root.cal_height(self.origin_y)
+        self.width = int(self.root.cal_width(self.initial_width))
+        self.height = int(self.root.cal_height(self.initial_height))
+
+        self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
+        self.photo = ImageTk.PhotoImage(self.img)
+        self.root.canvas.create_image(self.x, self.y, image=self.photo)
+
+        self.root.update()
