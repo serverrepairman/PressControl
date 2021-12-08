@@ -11,8 +11,8 @@ class GameWindow(tk.Toplevel):
     button_height_arrow = 40
     button_width_next = 120
     button_height_next = 40
-    player_width = 20
-    player_height = 20
+    player_width = 10
+    player_height = 10
     initial_width = 300
     initial_height = 200
     width_ratio = 0.25
@@ -58,11 +58,11 @@ class GameWindow(tk.Toplevel):
                                            )
         self.buttons['Delete'] = GameButton(self, "./img/Delete.png",
                                             GameWindow.button_width_arrow, GameWindow.button_height_arrow,
-                                            self.right_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, 0
+                                            self.delete_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, 0
                                             )
         self.buttons['Next'] = GameButton(self, "./img/Next.png",
                                           GameWindow.button_width_next, GameWindow.button_height_next,
-                                          self.right_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
+                                          self.next_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
 
     def refresh_canvas(self):
@@ -82,26 +82,23 @@ class GameWindow(tk.Toplevel):
         return origin_height * self.height / GameWindow.initial_height
 
     def next_clicked(self):
-        print("next")
-        self.next_window = GameWindow(self)
+        self.buttons['Next'].disabled = True
+        self.next_window = Score.new_stage()
+        self.refresh_canvas()
 
     def right_clicked(self):
         if self.next_window is not None:
             self.next_window.player.right()
 
     def left_clicked(self):
-        print("left")
         if self.next_window is not None:
             self.next_window.player.left()
 
     def up_clicked(self):
-        print("up")
         if self.next_window is not None:
-            print("up2")
             self.next_window.player.up()
 
     def down_clicked(self):
-        print("down")
         if self.next_window is not None:
             self.next_window.player.down()
 
@@ -117,6 +114,9 @@ class GameButton:
         self.height = self.initial_height = int(img_height)
         self.img_path = img_path
         self.command = command
+        self.disabled = False
+
+        print(command)
 
         self.width_c = width_c
         self.btn_width_c = btn_width_c
@@ -130,6 +130,8 @@ class GameButton:
         self.update()
 
     def update(self):
+        if self.disabled:
+            return
         self.width = int(self.root.cal_width(self.initial_width))
         self.height = int(self.root.cal_height(self.initial_height))
         self.x = self.root.width * self.width_c + self.width * self.btn_width_c
@@ -199,3 +201,31 @@ class Player:
         self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.img)
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
+
+    def space(self):
+        self.root.refresh_canvas()
+        if self.root.next_window is not None:
+            self.root.next_window.player.space()
+
+
+class Score:
+    score = 0
+    stages = []
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def game_start(cls, root):
+        cls.stages.append(root)
+
+    @classmethod
+    def new_stage(cls):
+        next_stage = GameWindow(Score.stages[-1])
+        Score.stages.append(next_stage)
+        next_stage.title('stage' + str(len(cls.stages)))
+        return next_stage
+
+    @classmethod
+    def now_score(cls):
+        return len(cls.stages)
