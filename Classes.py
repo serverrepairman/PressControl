@@ -6,6 +6,7 @@ from Utils import *
 import PIL
 from PIL import ImageTk, Image
 from functools import partial
+import random
 
 
 class GameWindow(tk.Toplevel):
@@ -58,7 +59,7 @@ class GameWindow(tk.Toplevel):
                                         )
         self.buttons['Down'] = GameButton(self, "./img/Down.png",
                                           GameWindow.button_width_arrow, GameWindow.button_height_arrow,
-                                          self.down_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, 1
+                                          self.down_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, 0
                                           )
         self.buttons['Left'] = GameButton(self, "./img/Left.png",
                                           GameWindow.button_width_arrow, GameWindow.button_height_arrow,
@@ -68,14 +69,14 @@ class GameWindow(tk.Toplevel):
                                            GameWindow.button_width_arrow, GameWindow.button_height_arrow,
                                            self.right_clicked, GameWindow.width_ratio, 1, GameWindow.height_ratio, 0
                                            )
-        self.buttons['Delete'] = GameButton(self, "./img/Delete.png",
-                                            GameWindow.button_width_arrow, GameWindow.button_height_arrow,
-                                            self.delete_clicked, GameWindow.width_ratio, 0, GameWindow.height_ratio, 0
-                                            )
         self.buttons['Next'] = GameButton(self, "./img/Next.png",
                                           GameWindow.button_width_next, GameWindow.button_height_next,
                                           self.next_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
+        self.buttons['Delete'] = GameButton(self, "./img/Delete.png",
+                                            GameWindow.button_width_arrow, GameWindow.button_height_arrow,
+                                            self.delete_clicked, random.uniform(0.1, 1), 0, random.uniform(0.1, 1), 0
+                                            )
         self.buttons['Player'] = self.player
 
     def refresh_canvas(self):
@@ -218,17 +219,19 @@ class Player:
             self.root.next_window.player.space()
 
 
-class Score(tk.Toplevel):
+class Score:
     score = 1
     stages = []
     score_board = None
+    score_instance = None
 
     def __init__(self, parent):
-        super().__init__(parent)
-        Score.score_board = self
-        self.font = tkFont.Font(family="Lucida Grande", size=100)
+        Score.score_board = parent
+        Score.score_instance = self
+        parent.title('Score Board')
+        self.font = tkFont.Font(family="Lucida Grande", size=30)
         self.text_score = tk.StringVar()
-        self.label_score = Label(self, text='Score : ' + str(Score.score), font=self.font)
+        self.label_score = Label(parent, text='Score : ' + str(Score.score), font=self.font)
         self.label_score.pack()
 
     @classmethod
@@ -241,9 +244,10 @@ class Score(tk.Toplevel):
         next_stage = GameWindow(cls.stages[-1], Score.score)
         Score.stages.append(next_stage)
         next_stage.title('stage' + str(Score.score))
-        cls.score_board.update()
+        cls.score_instance.update()
         for x in reversed(cls.stages):
             x.lift()
+        Score.score_board.lift()
         return next_stage
 
     @classmethod
@@ -252,17 +256,17 @@ class Score(tk.Toplevel):
 
     @classmethod
     def game_over(cls):
-        cls.score_board.label_score.configure(text='Game Over \n Score : ' + str(Score.score))
+        cls.score_instance.label_score.configure(text='Game Over \n Score : ' + str(Score.score))
         cls.stages[0].destroy()
 
     @classmethod
     def update(cls):
-        cls.score_board.label_score.configure(text='Score : ' + str(Score.score))
+        cls.score_instance.label_score.configure(text='Score : ' + str(Score.score))
 
 
 class LoginPage:
     width = 300
-    height = 200
+    height = 300
     def __init__(self, root):
 
         # window
@@ -376,6 +380,7 @@ class GameMain:
         Score.game_start(cls.stage)
         cls.score = Score(cls.root)
         cls.root.update()
+        cls.root.lift()
 
         cls.stage.canvas.bind_all('<KeyPress-Down>', lambda x: cls.stage.player.down())
         cls.stage.canvas.bind_all('<KeyPress-Up>', lambda x: cls.stage.player.up())
