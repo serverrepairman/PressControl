@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 2.0">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/config.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="ROOT_SYNC" value="DONT_SYNC" />
+  </component>
+  <component name="IgnoredFileRootStore">
+    <option name="generatedRoots">
+      <set>
+        <option value="C:\Users\gustj\PycharmProjects\PressControl\.idea" />
+      </set>
+    </option>
+  </component>
+  <component name="ProjectId" id="21xa6gVXWVFdRUl1xirbgJgsjEw" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\gustj\PycharmProjects\PressControl" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="" />
+      <created>1638885018259</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1638885018259</updated>
+    </task>
+    <task id="LOCAL-00001">
+      <created>1638944176076</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1638944176076</updated>
+    </task>
+    <task id="LOCAL-00002">
+      <created>1638944196609</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1638944196609</updated>
+    </task>
+    <task id="LOCAL-00003" summary="version 1">
+      <created>1638944286455</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1638944286455</updated>
+    </task>
+    <task id="LOCAL-00004" summary="version 1">
+      <created>1638944410895</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1638944410895</updated>
+    </task>
+    <task id="LOCAL-00005" summary="version 1.1">
+      <created>1638944890472</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1638944890472</updated>
+    </task>
+    <task id="LOCAL-00006" summary="version 1.1">
+      <created>1638958192138</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1638958192138</updated>
+    </task>
+    <task id="LOCAL-00007" summary="version 1.1">
+      <created>1638961431394</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1638961431394</updated>
+    </task>
+    <task id="LOCAL-00008" summary="version 1.1">
+      <created>1638962324856</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1638962324856</updated>
+    </task>
+    <task id="LOCAL-00009" summary="version 2.0">
+      <created>1638964646131</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1638964646131</updated>
+    </task>
+    <task id="LOCAL-00010" summary="version 2.0">
+      <created>1639012620692</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1639012620692</updated>
+    </task>
+    <task id="LOCAL-00011" summary="version 2.0">
+      <created>1639012736452</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1639012736452</updated>
+    </task>
+    <task id="LOCAL-00012" summary="version 2.0">
+      <created>1639012821862</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1639012821862</updated>
+    </task>
+    <task id="LOCAL-00013" summary="version 2.0">
+      <created>1639012969729</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1639012969729</updated>
+    </task>
+    <task id="LOCAL-00014" summary="version 2.0">
+      <created>1639013322709</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1639013322709</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="version 1" />
+    <MESSAGE value="version 1.1" />
+    <MESSAGE value="version 2.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="version 2.0" />
+  </component>
+</project>
