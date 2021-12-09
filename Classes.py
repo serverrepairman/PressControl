@@ -7,15 +7,19 @@ import PIL
 from PIL import ImageTk, Image
 from functools import partial
 import random
+import json
+import hashlib
 
 
 class GameWindow(tk.Toplevel):
     button_width_arrow = 40
     button_height_arrow = 40
+    button_width_delete = 20
+    button_height_delete = 20
     button_width_next = 120
     button_height_next = 40
-    player_width = 10
-    player_height = 10
+    player__width = 10
+    player__height = 10
     initial_width = 300
     initial_height = 200
     width_ratio = 0.25
@@ -38,7 +42,7 @@ class GameWindow(tk.Toplevel):
         self.canvas.pack(fill=BOTH, expand=1)
 
         self.next_window = None
-        self.player = None
+        self.player_ = None
 
         self.width = self.winfo_screenwidth()
         self.height = self.winfo_screenheight()
@@ -50,8 +54,8 @@ class GameWindow(tk.Toplevel):
         self.protocol("WM_DELETE_WINDOW", self.delete_clicked)
 
     def make_buttons(self):
-        self.player = Player(self, "./img/Player.png", self.player_width, self.player_height,
-                                                      self.player_width / 2, self.player_height / 2, 5)
+        self.player_ = Player_(self, "./img/Player_.png", self.player__width, self.player__height,
+                             self.player__width / 2, self.player__height / 2, 5)
 
         self.buttons['Up'] = GameButton(self, "./img/Up.png",
                                         GameWindow.button_width_arrow, GameWindow.button_height_arrow,
@@ -73,11 +77,14 @@ class GameWindow(tk.Toplevel):
                                           GameWindow.button_width_next, GameWindow.button_height_next,
                                           self.next_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
-        self.buttons['Delete'] = GameButton(self, "./img/Delete.png",
-                                            GameWindow.button_width_arrow, GameWindow.button_height_arrow,
-                                            self.delete_clicked, random.uniform(0.1, 1), 0, random.uniform(0.1, 1), 0
-                                            )
-        self.buttons['Player'] = self.player
+        for i in range(1):
+            self.buttons['Delete' + str(i)] = GameButton(self, "./img/Delete.png",
+                                                         GameWindow.button_width_delete,
+                                                         GameWindow.button_height_delete,
+                                                         self.delete_clicked, 0.2, 0,
+                                                         0.2, 0
+                                                         )
+        self.buttons['Player_'] = self.player_
 
     def refresh_canvas(self):
         self.canvas.delete("all")
@@ -102,19 +109,19 @@ class GameWindow(tk.Toplevel):
 
     def right_clicked(self):
         if self.next_window is not None:
-            self.next_window.player.right()
+            self.next_window.player_.right()
 
     def left_clicked(self):
         if self.next_window is not None:
-            self.next_window.player.left()
+            self.next_window.player_.left()
 
     def up_clicked(self):
         if self.next_window is not None:
-            self.next_window.player.up()
+            self.next_window.player_.up()
 
     def down_clicked(self):
         if self.next_window is not None:
-            self.next_window.player.down()
+            self.next_window.player_.down()
 
     def delete_clicked(self):
         Score.game_over()
@@ -155,15 +162,16 @@ class GameButton:
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
 
     def is_clicked(self):
-        if abs(self.root.player.x - self.x) <= (self.width + self.root.player.width)/2 and \
-                abs(self.root.player.y - self.y) <= (self.height + self.root.player.height)/2:
+        if abs(self.root.player_.x - self.x) < (self.width + self.root.player_.width) / 2 and \
+                abs(self.root.player_.y - self.y) < (self.height + self.root.player_.height) / 2:
+            print(self.root.player_.x , self.x, self.width , self.root.player_.width)
             self.clicked()
 
     def clicked(self):
         self.command()
 
 
-class Player:
+class Player_:
     def __init__(self, root, img_path, width, height, initial_x, initial_y, initial_v):
         self.root = root
         self.img_path = img_path
@@ -216,7 +224,7 @@ class Player:
     def space(self):
         self.root.refresh_canvas()
         if self.root.next_window is not None:
-            self.root.next_window.player.space()
+            self.root.next_window.player_.space()
 
 
 class Score:
@@ -267,11 +275,12 @@ class Score:
 class LoginPage:
     width = 300
     height = 300
+
     def __init__(self, root):
 
         # window
         self.root = root
-        self.root.geometry(str(LoginPage.width)+'x'+str(LoginPage.height))
+        self.root.geometry(str(LoginPage.width) + 'x' + str(LoginPage.height))
         self.frame_login = None
         self.frame_register = None
         self.make_login_frame()
@@ -288,23 +297,24 @@ class LoginPage:
         # username label and text entry box
         usernameLabel = Label(self.frame_login, text="User Name").grid(row=0, column=0)
         username = StringVar()
-        usernameEntry = Entry(self.frame_login, textvariable = username).grid(row=0, column=1)
+        usernameEntry = Entry(self.frame_login, textvariable=username).grid(row=0, column=1)
 
         # password label and password entry box
         passwordLabel = Label(self.frame_login, text="Password").grid(row=1, column=0)
         password = StringVar()
-        passwordEntry = Entry(self.frame_login, textvariable = password, show='*').grid(row=1, column=1)
+        passwordEntry = Entry(self.frame_login, textvariable=password, show='*').grid(row=1, column=1)
 
-        self.validatelogin = partial(self.validatelogin,   username,   password)
+        self.validatelogin = partial(self.validatelogin, username, password)
 
         # login button
         loginButton = Button(self.frame_login, text="Login", command=self.validatelogin).grid(row=4, column=0)
-        registerButton = Button(self.frame_login, text="Register", command=self.make_register_frame).grid(row=4, column=1)
+        registerButton = Button(self.frame_login, text="Register", command=self.make_register_frame).grid(row=4,
+                                                                                                          column=1)
 
         # self.scrollbar = Scrollbar(self.frame_login)
         # self.scrollbar.grid(row=5, column=0, rowspan=2, columnspan=5)
         # print(self.scrollbar)
-        self.log = Label(self.frame_login, text='logs\n'*10)
+        self.log = Label(self.frame_login, text='')
         self.log.grid(row=5, column=0, rowspan=2)
         # self.frame_login.config(xscrollcommand=self.scrollbar.set)
 
@@ -320,23 +330,24 @@ class LoginPage:
         self.frame_register = LabelFrame(self.root, text='Register')
         usernameLabel = Label(self.frame_register, text="User Name").grid(row=0, column=0)
         username = StringVar()
-        usernameEntry = Entry(self.frame_register, textvariable = username).grid(row=0, column=1)
+        usernameEntry = Entry(self.frame_register, textvariable=username).grid(row=0, column=1)
 
         passwordLabel = Label(self.frame_register, text="Password").grid(row=1, column=0)
         password = StringVar()
-        passwordEntry = Entry(self.frame_register, textvariable = password, show='*').grid(row=1, column=1)
+        passwordEntry = Entry(self.frame_register, textvariable=password, show='*').grid(row=1, column=1)
 
         passwordLabel_again = Label(self.frame_register, text="Password_again").grid(row=2, column=0)
         password_again = StringVar()
         passwordEntry_again = Entry(self.frame_register, textvariable=password_again, show='*').grid(row=2, column=1)
 
-        self.validateregister = partial(self.validateregister,   username,   password, password_again)
+        self.validateregister = partial(self.validateregister, username, password, password_again)
 
         # login button
-        registerButton = Button(self.frame_register, text="Register", command=self.validateregister).grid(row=4, column=0)
+        registerButton = Button(self.frame_register, text="Register", command=self.validateregister).grid(row=4,
+                                                                                                          column=0)
 
         # self.scrollbar = Scrollbar(self.frame_register).grid(row=5, column=0, rowspan=2, columnspan=5)
-        self.log = Label(self.frame_register, text='logs')
+        self.log = Label(self.frame_register, text='')
         self.log.grid(row=5, column=0, rowspan=2)
 
         self.frame_register.pack()
@@ -350,18 +361,28 @@ class LoginPage:
         self.ID_label = Label(self.root, text='ID : ' + self.ID, font=self.font)
         self.ID_label.pack()
 
-    def validatelogin(self,username, password):
+    def validatelogin(self, username, password):
         self.ID = username.get()
         print("username entered :", self.ID)
         print("password entered :", password.get())
         self.make_status_frame()
         GameMain.game_start(self.root)
 
-    def validateregister(self,username, password, password_again):
-        print("username entered :", username.get())
-        print("password entered :", password.get())
-        print("password re_enterd : ", password_again.get())
-        self.make_login_frame()
+    def validateregister(self, username, password, password_again):
+        pwd = hashlib.sha256()
+        pwd.update(password.get().encode('utf-8'))
+        pwd_again = hashlib.sha256()
+        pwd_again.update(password_again.get().encode('utf-8'))
+        try_register = Person_Database.register(username.get(), pwd.hexdigest(), pwd_again.hexdigest())
+        if try_register is True:
+            self.println("success")
+            self.make_login_frame()
+        else:
+            self.println(try_register)
+
+    def println(self, msg):
+        log_txt = self.log.cget("text") + msg + "\n"
+        self.log.configure(text=log_txt)
 
 
 class GameMain:
@@ -382,8 +403,44 @@ class GameMain:
         cls.root.update()
         cls.root.lift()
 
-        cls.stage.canvas.bind_all('<KeyPress-Down>', lambda x: cls.stage.player.down())
-        cls.stage.canvas.bind_all('<KeyPress-Up>', lambda x: cls.stage.player.up())
-        cls.stage.canvas.bind_all('<KeyPress-Left>', lambda x: cls.stage.player.left())
-        cls.stage.canvas.bind_all('<KeyPress-Right>', lambda x: cls.stage.player.right())
-        cls.stage.canvas.bind_all('<KeyPress-space>', lambda x: cls.stage.player.space())
+        cls.stage.canvas.bind_all('<KeyPress-Down>', lambda x: cls.stage.player_.down())
+        cls.stage.canvas.bind_all('<KeyPress-Up>', lambda x: cls.stage.player_.up())
+        cls.stage.canvas.bind_all('<KeyPress-Left>', lambda x: cls.stage.player_.left())
+        cls.stage.canvas.bind_all('<KeyPress-Right>', lambda x: cls.stage.player_.right())
+        cls.stage.canvas.bind_all('<KeyPress-space>', lambda x: cls.stage.player_.space())
+
+
+class Person_Database:
+    json_data = None
+    clients = None
+    json_path = './clients.json'
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def load_database(cls):
+        with open(cls.json_path, 'r') as f:
+            cls.json_data = json.load(f)
+        cls.clients = cls.json_data["clients"]
+
+    @classmethod
+    def register(cls, ID, passwd_in, passwd_again):
+        if cls.clients is None:
+            return "database error"
+        for x in cls.clients:
+            if x["ID"] == ID:
+                return "ID already exist"
+        if passwd_in == passwd_again:
+            cls.clients.append({"ID": ID, "password": passwd_in})
+            return True
+        return "password not match"
+
+    @classmethod
+    def save_database(cls):
+        with open(cls.json_path, 'w') as f:
+            json.dump(cls.json_data, f, indent=4)
+
+    @classmethod
+    def clear_database(cls):
+        cls.clients.clear()
