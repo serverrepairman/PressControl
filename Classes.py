@@ -18,8 +18,9 @@ class GameWindow(tk.Toplevel):
     width_ratio = 0.25
     height_ratio = 0.5
 
-    def __init__(self, parent):
+    def __init__(self, parent, index):
         super().__init__(parent)
+        self.index = index
         self.geometry(str(GameWindow.initial_width) + 'x' + str(GameWindow.initial_height))
 
         self.canvas = Canvas(self, bd=0, highlightthickness=0)
@@ -37,7 +38,7 @@ class GameWindow(tk.Toplevel):
         self.canvas.bind("<Configure>", self.config_listener)
 
     def make_buttons(self):
-        self.player = self.buttons['Player'] = Player(self, "./img/Player.png", self.player_width, self.player_height,
+        self.player = Player(self, "./img/Player.png", self.player_width, self.player_height,
                                                       self.player_width / 2, self.player_height / 2, 5)
 
         self.buttons['Up'] = GameButton(self, "./img/Up.png",
@@ -64,6 +65,7 @@ class GameWindow(tk.Toplevel):
                                           GameWindow.button_width_next, GameWindow.button_height_next,
                                           self.next_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
+        self.buttons['Player'] = self.player
 
     def refresh_canvas(self):
         self.canvas.delete("all")
@@ -103,8 +105,7 @@ class GameWindow(tk.Toplevel):
             self.next_window.player.down()
 
     def delete_clicked(self):
-        print("delete")
-        self.destroy()
+        Score.game_over()
 
 
 class GameButton:
@@ -221,7 +222,7 @@ class Score:
 
     @classmethod
     def new_stage(cls):
-        next_stage = GameWindow(Score.stages[-1])
+        next_stage = GameWindow(cls.stages[-1], len(cls.stages) + 1)
         Score.stages.append(next_stage)
         next_stage.title('stage' + str(len(cls.stages)))
         return next_stage
@@ -229,3 +230,7 @@ class Score:
     @classmethod
     def now_score(cls):
         return len(cls.stages)
+
+    @classmethod
+    def game_over(cls):
+        cls.stages[0].destroy()
