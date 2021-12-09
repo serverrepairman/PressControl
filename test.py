@@ -1,24 +1,29 @@
 from tkinter import *
+from functools import partial
 
-# create a canvas with no internal border
-canvas = Canvas(bd=0, highlightthickness=0)
-canvas.pack(fill=BOTH, expand=1)
+def validateLogin(username, password):
+	print("username entered :", username.get())
+	print("password entered :", password.get())
+	return
 
-# track changes to the canvas size and draw
-# a rectangle which fills the visible part of
-# the canvas
+#window
+tkWindow = Tk()
+tkWindow.geometry('400x150')
+tkWindow.title('Tkinter Login Form - pythonexamples.org')
 
-def configure(event):
-    canvas.delete("all")
-    w, h = event.width, event.height
-    print(w)
-    print(h)
-    xy = 0, 0, w-1, h-1
-    canvas.create_rectangle(xy)
-    canvas.create_line(xy)
-    xy = w-1, 0, 0, h-1
-    canvas.create_line(xy)
+#username label and text entry box
+usernameLabel = Label(tkWindow, text="User Name").grid(row=0, column=0)
+username = StringVar()
+usernameEntry = Entry(tkWindow, textvariable=username).grid(row=0, column=1)
 
-canvas.bind("<Configure>", configure)
+#password label and password entry box
+passwordLabel = Label(tkWindow,text="Password").grid(row=1, column=0)
+password = StringVar()
+passwordEntry = Entry(tkWindow, textvariable=password, show='*').grid(row=1, column=1)
 
-mainloop()
+validateLogin = partial(validateLogin, username, password)
+
+#login button
+loginButton = Button(tkWindow, text="Login", command=validateLogin).grid(row=4, column=0)
+
+tkWindow.mainloop()

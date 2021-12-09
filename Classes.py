@@ -1,9 +1,11 @@
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from tkinter import font as tkFont
 from Utils import *
 import PIL
 from PIL import ImageTk, Image
+from functools import partial
 
 
 class GameWindow(tk.Toplevel):
@@ -36,6 +38,7 @@ class GameWindow(tk.Toplevel):
         self.make_buttons()
         self.refresh_canvas()
         self.canvas.bind("<Configure>", self.config_listener)
+        self.protocol("WM_DELETE_WINDOW", self.delete_clicked)
 
     def make_buttons(self):
         self.player = Player(self, "./img/Player.png", self.player_width, self.player_height,
@@ -209,12 +212,18 @@ class Player:
             self.root.next_window.player.space()
 
 
-class Score:
-    score = 0
+class Score(tk.Toplevel):
+    score = 1
     stages = []
+    score_board = None
 
-    def __init__(self):
-        pass
+    def __init__(self, parent):
+        super().__init__(parent)
+        Score.score_board = self
+        self.font = tkFont.Font(family="Lucida Grande", size=100)
+        self.text_score = tk.StringVar()
+        self.label_score = Label(self, text='Score : ' + str(Score.score), font=self.font)
+        self.label_score.pack()
 
     @classmethod
     def game_start(cls, root):
@@ -222,9 +231,11 @@ class Score:
 
     @classmethod
     def new_stage(cls):
-        next_stage = GameWindow(cls.stages[-1], len(cls.stages) + 1)
+        cls.score = len(cls.stages) + 1
+        next_stage = GameWindow(cls.stages[-1], Score.score)
         Score.stages.append(next_stage)
-        next_stage.title('stage' + str(len(cls.stages)))
+        next_stage.title('stage' + str(Score.score))
+        cls.score_board.update()
         return next_stage
 
     @classmethod
@@ -233,4 +244,73 @@ class Score:
 
     @classmethod
     def game_over(cls):
+        cls.score_board.label_score.configure(text='Game Over \n Score : ' + str(Score.score))
         cls.stages[0].destroy()
+
+    @classmethod
+    def update(cls):
+        cls.score_board.label_score.configure(text='Score : ' + str(Score.score))
+
+
+class LoginPage:
+
+    def __init__(self, root):
+
+        # window
+        self.root = root
+        self.root.geometry('500x150')
+        self.make_login_frame()
+        self.make_register_frame()
+        self.log = Label(root, text='logs')
+        self.log.grid(row=1, column=0, columnspan=2)
+
+    def make_login_frame(self):
+        self.frame_login = LabelFrame(self.root, text='Login')
+
+        # username label and text entry box
+        usernameLabel = Label(self.frame_login, text="User Name").grid(row=0, column=0)
+        username = StringVar()
+        usernameEntry = Entry(self.frame_login, textvariable = username).grid(row=0, column=1)
+
+        # password label and password entry box
+        passwordLabel = Label(self.frame_login, text="Password").grid(row=1, column=0)
+        password = StringVar()
+        passwordEntry = Entry(self.frame_login, textvariable = password, show='*').grid(row=1, column=1)
+
+        self.validatelogin = partial(self.validatelogin,   username,   password)
+
+        # login button
+        loginButton = Button(self.frame_login, text="Login", command=self.validatelogin).grid(row=4, column=0)
+        self.frame_login.grid(row=0, column=0)
+
+    def make_register_frame(self):
+
+        self.frame_register = LabelFrame(self.root, text='Register')
+        usernameLabel = Label(self.frame_register, text="User Name").grid(row=0, column=0)
+        username = StringVar()
+        usernameEntry = Entry(self.frame_register, textvariable = username).grid(row=0, column=1)
+
+        passwordLabel = Label(self.frame_register, text="Password").grid(row=1, column=0)
+        password = StringVar()
+        passwordEntry = Entry(self.frame_register, textvariable = password, show='*').grid(row=1, column=1)
+
+        passwordLabel_again = Label(self.frame_register, text="Password_again").grid(row=2, column=0)
+        password_again = StringVar()
+        passwordEntry_again = Entry(self.frame_register, textvariable=password_again, show='*').grid(row=2, column=1)
+
+        self.validateregister = partial(self.validatelogin,   username,   password, password_again)
+
+        # login button
+        registerButton = Button(self.frame_register, text="Login", command=self.validateregister).grid(row=4, column=0)
+        self.frame_register.grid(row=0, column=1)
+
+    @staticmethod
+    def validatelogin(username, password):
+        print("username entered :", username.get())
+        print("password entered :", password.get())
+
+    @staticmethod
+    def validateregister(username, password, password_again):
+        print("username entered :", username.get())
+        print("password entered :", password.get())
+        print("password re_enterd : ", password_again.get())
