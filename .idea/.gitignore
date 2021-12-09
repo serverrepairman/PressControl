@@ -1,3 +1,4 @@
+config.py
 
 # Created by https://www.toptal.com/developers/gitignore/api/pycharm
 # Edit at https://www.toptal.com/developers/gitignore?templates=pycharm
@@ -12,7 +13,6 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
-config.py
 
 # AWS User-specific
 .idea/**/aws.xml
