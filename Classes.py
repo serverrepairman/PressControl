@@ -173,19 +173,19 @@ class Player:
 
     def right(self):
         self.origin_x += self.origin_v
-        self.root.refresh_canvas()
+        self.space()
 
     def left(self):
         self.origin_x -= self.origin_v
-        self.root.refresh_canvas()
+        self.space()
 
     def up(self):
         self.origin_y -= self.origin_v
-        self.root.refresh_canvas()
+        self.space()
 
     def down(self):
         self.origin_y += self.origin_v
-        self.root.refresh_canvas()
+        self.space()
 
     def update(self):
         if self.origin_x < self.initial_width / 2:
@@ -253,18 +253,24 @@ class Score(tk.Toplevel):
 
 
 class LoginPage:
-
+    width = 300
+    height = 300
     def __init__(self, root):
 
         # window
         self.root = root
-        self.root.geometry('500x150')
+        self.root.geometry(str(LoginPage.width)+'x'+str(LoginPage.height))
+        self.frame_login = None
+        self.frame_register = None
         self.make_login_frame()
-        self.make_register_frame()
-        self.log = Label(root, text='logs')
-        self.log.grid(row=1, column=0, columnspan=2)
 
     def make_login_frame(self):
+        if self.frame_register is not None:
+            self.frame_register.pack_forget()
+        if self.frame_login is not None:
+            self.frame_login.pack()
+            return
+
         self.frame_login = LabelFrame(self.root, text='Login')
 
         # username label and text entry box
@@ -281,9 +287,23 @@ class LoginPage:
 
         # login button
         loginButton = Button(self.frame_login, text="Login", command=self.validatelogin).grid(row=4, column=0)
-        self.frame_login.grid(row=0, column=0)
+        registerButton = Button(self.frame_login, text="Register", command=self.make_register_frame).grid(row=4, column=1)
+
+        # self.scrollbar = Scrollbar(self.frame_login)
+        # self.scrollbar.grid(row=5, column=0, rowspan=2, columnspan=5)
+        # print(self.scrollbar)
+        self.log = Label(self.frame_login, text='logs\n'*10)
+        self.log.grid(row=5, column=0, rowspan=2)
+        # self.frame_login.config(xscrollcommand=self.scrollbar.set)
+
+        self.frame_login.pack()
 
     def make_register_frame(self):
+        if self.frame_login is not None:
+            self.frame_login.pack_forget()
+        if self.frame_register is not None:
+            self.frame_register.pack()
+            return
 
         self.frame_register = LabelFrame(self.root, text='Register')
         usernameLabel = Label(self.frame_register, text="User Name").grid(row=0, column=0)
@@ -298,19 +318,23 @@ class LoginPage:
         password_again = StringVar()
         passwordEntry_again = Entry(self.frame_register, textvariable=password_again, show='*').grid(row=2, column=1)
 
-        self.validateregister = partial(self.validatelogin,   username,   password, password_again)
+        self.validateregister = partial(self.validateregister,   username,   password, password_again)
 
         # login button
-        registerButton = Button(self.frame_register, text="Login", command=self.validateregister).grid(row=4, column=0)
-        self.frame_register.grid(row=0, column=1)
+        registerButton = Button(self.frame_register, text="Register", command=self.validateregister).grid(row=4, column=0)
 
-    @staticmethod
-    def validatelogin(username, password):
+        # self.scrollbar = Scrollbar(self.frame_register).grid(row=5, column=0, rowspan=2, columnspan=5)
+        self.log = Label(self.frame_register, text='logs')
+        self.log.grid(row=5, column=0, rowspan=2)
+
+        self.frame_register.pack()
+
+    def validatelogin(self,username, password):
         print("username entered :", username.get())
         print("password entered :", password.get())
 
-    @staticmethod
-    def validateregister(username, password, password_again):
+    def validateregister(self,username, password, password_again):
         print("username entered :", username.get())
         print("password entered :", password.get())
         print("password re_enterd : ", password_again.get())
+        self.make_login_frame()
