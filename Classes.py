@@ -23,7 +23,7 @@ class GameWindow(tk.Toplevel):
     def __init__(self, parent, index):
         super().__init__(parent)
         self.index = index
-        self.geometry(str(GameWindow.initial_width) + 'x' + str(GameWindow.initial_height))
+        self.geometry(str(GameWindow.initial_width) + 'x' + str(GameWindow.initial_height) + '+1000+0')
 
         self.canvas = Canvas(self, bd=0, highlightthickness=0)
         self.canvas.pack(fill=BOTH, expand=1)
@@ -329,12 +329,48 @@ class LoginPage:
 
         self.frame_register.pack()
 
+    def make_status_frame(self):
+        if self.frame_login is not None:
+            self.frame_login.pack_forget()
+
+        self.root.geometry("500x100")
+        self.font = tkFont.Font(family="Lucida Grande", size=30)
+        self.ID_label = Label(self.root, text='ID : ' + self.ID, font=self.font)
+        self.ID_label.pack()
+
     def validatelogin(self,username, password):
-        print("username entered :", username.get())
+        self.ID = username.get()
+        print("username entered :", self.ID)
         print("password entered :", password.get())
+        self.make_status_frame()
+        GameMain.game_start(self.root)
 
     def validateregister(self,username, password, password_again):
         print("username entered :", username.get())
         print("password entered :", password.get())
         print("password re_enterd : ", password_again.get())
         self.make_login_frame()
+
+
+class GameMain:
+    stage = None
+    score = None
+    root = None
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def game_start(cls, root):
+        cls.root = root
+        cls.stage = GameWindow(cls.root, 1)
+        cls.stage.title("stage" + str(1))
+        Score.game_start(cls.stage)
+        cls.score = Score(cls.root)
+        cls.root.update()
+
+        cls.stage.canvas.bind_all('<KeyPress-Down>', lambda x: cls.stage.player.down())
+        cls.stage.canvas.bind_all('<KeyPress-Up>', lambda x: cls.stage.player.up())
+        cls.stage.canvas.bind_all('<KeyPress-Left>', lambda x: cls.stage.player.left())
+        cls.stage.canvas.bind_all('<KeyPress-Right>', lambda x: cls.stage.player.right())
+        cls.stage.canvas.bind_all('<KeyPress-space>', lambda x: cls.stage.player.space())
