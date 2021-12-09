@@ -23,7 +23,15 @@ class GameWindow(tk.Toplevel):
     def __init__(self, parent, index):
         super().__init__(parent)
         self.index = index
-        self.geometry(str(GameWindow.initial_width) + 'x' + str(GameWindow.initial_height) + '+1000+0')
+        self.monitor_width = parent.winfo_screenwidth()
+        self.monitor_height = parent.winfo_screenheight()
+
+        self.column_len = self.monitor_width // self.initial_width
+        self.row_len = self.monitor_height // self.initial_height
+
+        self.geometry(str(GameWindow.initial_width) + 'x' + str(GameWindow.initial_height)
+                      + '+' + str((self.index // self.column_len) * self.initial_width)
+                      + '+' + str((self.index % self.column_len) * self.initial_height))
 
         self.canvas = Canvas(self, bd=0, highlightthickness=0)
         self.canvas.pack(fill=BOTH, expand=1)
@@ -119,8 +127,6 @@ class GameButton:
         self.img_path = img_path
         self.command = command
         self.disabled = False
-
-        print(command)
 
         self.width_c = width_c
         self.btn_width_c = btn_width_c
@@ -236,6 +242,8 @@ class Score(tk.Toplevel):
         Score.stages.append(next_stage)
         next_stage.title('stage' + str(Score.score))
         cls.score_board.update()
+        for x in reversed(cls.stages):
+            x.lift()
         return next_stage
 
     @classmethod
@@ -254,7 +262,7 @@ class Score(tk.Toplevel):
 
 class LoginPage:
     width = 300
-    height = 300
+    height = 200
     def __init__(self, root):
 
         # window
@@ -333,7 +341,7 @@ class LoginPage:
         if self.frame_login is not None:
             self.frame_login.pack_forget()
 
-        self.root.geometry("500x100")
+        self.root.geometry("300x200+0+0")
         self.font = tkFont.Font(family="Lucida Grande", size=30)
         self.ID_label = Label(self.root, text='ID : ' + self.ID, font=self.font)
         self.ID_label.pack()
