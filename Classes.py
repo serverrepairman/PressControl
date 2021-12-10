@@ -30,6 +30,7 @@ class GameWindow(tk.Toplevel):
         self.index = index
         self.monitor_width = parent.winfo_screenwidth()
         self.monitor_height = parent.winfo_screenheight()
+        self.now_playing = True
 
         self.column_len = self.monitor_width // self.initial_width
         self.row_len = self.monitor_height // self.initial_height
@@ -55,7 +56,7 @@ class GameWindow(tk.Toplevel):
 
     def make_buttons(self):
         self.player_ = Player_(self, "./img/Player_.png", self.player__width, self.player__height,
-                             self.player__width / 2, self.player__height / 2, 5)
+                               self.player__width / 2, self.player__height / 2, 5)
 
         self.buttons['Up'] = GameButton(self, "./img/Up.png",
                                         GameWindow.button_width_arrow, GameWindow.button_height_arrow,
@@ -77,12 +78,14 @@ class GameWindow(tk.Toplevel):
                                           GameWindow.button_width_next, GameWindow.button_height_next,
                                           self.next_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
-        for i in range(1):
+        for i in range(100):
+            rnd_now = random.randint(0, 1)
             self.buttons['Delete' + str(i)] = GameButton(self, "./img/Delete.png",
                                                          GameWindow.button_width_delete,
                                                          GameWindow.button_height_delete,
-                                                         self.delete_clicked, 0.2, 0,
-                                                         0.2, 0
+                                                         self.delete_clicked,
+                                                         random.random(), rnd_now,
+                                                         random.random(), 1 - rnd_now
                                                          )
         self.buttons['Player_'] = self.player_
 
@@ -90,6 +93,8 @@ class GameWindow(tk.Toplevel):
         self.canvas.delete("all")
         for btn in self.buttons.values():
             btn.update()
+        for btn in self.buttons.values():
+            btn.is_clicked()
 
     def config_listener(self, event):
         self.width = event.width
@@ -157,14 +162,14 @@ class GameButton:
 
         self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.img)
-        self.is_clicked()
 
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
 
     def is_clicked(self):
+        if self.disabled:
+            return
         if abs(self.root.player_.x - self.x) < (self.width + self.root.player_.width) / 2 and \
                 abs(self.root.player_.y - self.y) < (self.height + self.root.player_.height) / 2:
-            print(self.root.player_.x , self.x, self.width , self.root.player_.width)
             self.clicked()
 
     def clicked(self):
@@ -214,12 +219,16 @@ class Player_:
 
         self.x = self.root.cal_width(self.origin_x)
         self.y = self.root.cal_height(self.origin_y)
+
         self.width = int(self.root.cal_width(self.initial_width))
         self.height = int(self.root.cal_height(self.initial_height))
 
         self.img = self.img_origin.resize((self.width, self.height), PIL.Image.ANTIALIAS)
         self.photo = ImageTk.PhotoImage(self.img)
         self.root.canvas.create_image(self.x, self.y, image=self.photo)
+
+    def is_clicked(self):
+        pass
 
     def space(self):
         self.root.refresh_canvas()
@@ -310,13 +319,8 @@ class LoginPage:
         loginButton = Button(self.frame_login, text="Login", command=self.validatelogin).grid(row=4, column=0)
         registerButton = Button(self.frame_login, text="Register", command=self.make_register_frame).grid(row=4,
                                                                                                           column=1)
-
-        # self.scrollbar = Scrollbar(self.frame_login)
-        # self.scrollbar.grid(row=5, column=0, rowspan=2, columnspan=5)
-        # print(self.scrollbar)
         self.log = Label(self.frame_login, text='')
         self.log.grid(row=5, column=0, rowspan=2)
-        # self.frame_login.config(xscrollcommand=self.scrollbar.set)
 
         self.frame_login.pack()
 
@@ -363,16 +367,22 @@ class LoginPage:
 
     def validatelogin(self, username, password):
         self.ID = username.get()
-        print("username entered :", self.ID)
-        print("password entered :", password.get())
-        self.make_status_frame()
-        GameMain.game_start(self.root)
+        pwd = hashlib.sha256()
+        pwd.update(password.get().encode('utf-8'))
+
+        try_login = Person_Database.login(username.get(), pwd.hexdigest())
+        if try_login is True:
+            self.make_status_frame()
+            GameMain.game_start(self.root)
+        else:
+            self.println(try_login)
 
     def validateregister(self, username, password, password_again):
         pwd = hashlib.sha256()
         pwd.update(password.get().encode('utf-8'))
         pwd_again = hashlib.sha256()
         pwd_again.update(password_again.get().encode('utf-8'))
+
         try_register = Person_Database.register(username.get(), pwd.hexdigest(), pwd_again.hexdigest())
         if try_register is True:
             self.println("success")
@@ -425,6 +435,15 @@ class Person_Database:
         cls.clients = cls.json_data["clients"]
 
     @classmethod
+    def login(cls, ID, passwd_in):
+        if cls.clients is None:
+            return "database error"
+        for x in cls.clients:
+            if x["ID"] == ID and x["password"] == passwd_in:
+                return True
+        return "invalid ID"
+
+    @classmethod
     def register(cls, ID, passwd_in, passwd_again):
         if cls.clients is None:
             return "database error"
@@ -432,7 +451,23 @@ class Person_Database:
             if x["ID"] == ID:
                 return "ID already exist"
         if passwd_in == passwd_again:
-            cls.clients.append({"ID": ID, "password": passwd_in})
+            cls.clients.append(
+                {
+                    "ID": ID,
+                    "password": passwd_in,
+                    "max_score":
+                        {
+                            "hell": 0,
+                            "hardcore": 0,
+                            "very hard": 0,
+                            "hard": 0,
+                            "normal": 0,
+                            "easy": 0,
+                            "peaceful": 0
+                        }
+                }
+            )
+            cls.save_database()
             return True
         return "password not match"
 

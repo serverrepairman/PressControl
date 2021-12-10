@@ -2,7 +2,29 @@
     "clients": [
         {
             "ID": "serv2",
-            "password": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+            "password": "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824",
+            "max_score": {
+                "hell": 0,
+                "hardcore": 0,
+                "very hard": 0,
+                "hard": 0,
+                "normal": 0,
+                "easy": 0,
+                "peaceful": 0
+            }
+        },
+        {
+            "ID": "serv",
+            "password": "06d4fae79c09365dcb14045b90f251ace01e4d8755be50856eb3594d6b1625ce",
+            "max_score": {
+                "hell": 0,
+                "hardcore": 0,
+                "very hard": 0,
+                "hard": 0,
+                "normal": 0,
+                "easy": 0,
+                "peaceful": 0
+            }
         }
     ]
 }
