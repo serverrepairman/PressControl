@@ -9,6 +9,9 @@ from functools import partial
 import random
 import json
 import hashlib
+import socket
+import config
+from _thread import *
 
 
 class GameWindow(tk.Toplevel):
@@ -570,3 +573,31 @@ class Person_Database:
     @classmethod
     def clear_database(cls):
         cls.clients.clear()
+
+
+class Server_Connect:
+    client_socket = None
+
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def connect_server(cls, ip, port):
+
+        cls.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        cls.client_socket.connect((ip, port))
+        start_new_thread(cls.receive())
+
+        cls.client_socket.close()
+
+    @classmethod
+    def receive(cls):
+        while True:
+            data = cls.client_socket.recv(1024)
+            print('received from the server:', repr(data.decode()))
+
+
+    @classmethod
+    def send(cls, message):
+        cls.client_socket.send(message.encode())
