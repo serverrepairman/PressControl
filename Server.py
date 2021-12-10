@@ -42,7 +42,6 @@ class PersonDatabaseServer:
 
         server_socket.close()
 
-
 HOST = '127.0.0.1'
 PORT = 19032
-
+PersonDatabaseServer.start_server()
