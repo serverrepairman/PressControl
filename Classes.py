@@ -25,9 +25,10 @@ class GameWindow(tk.Toplevel):
     width_ratio = 0.25
     height_ratio = 0.5
 
-    def __init__(self, parent, index):
+    def __init__(self, parent, index, stage_num):
         super().__init__(parent)
         self.index = index
+        self.stage_num = stage_num
         self.monitor_width = parent.winfo_screenwidth()
         self.monitor_height = parent.winfo_screenheight()
         self.now_playing = True
@@ -49,7 +50,10 @@ class GameWindow(tk.Toplevel):
         self.height = self.winfo_screenheight()
 
         self.buttons = {}
-        self.make_buttons()
+        if self.stage_num == 6:
+            self.make_buttons_hell()
+        else:
+            self.make_buttons()
         self.refresh_canvas()
         self.canvas.bind("<Configure>", self.config_listener)
         self.protocol("WM_DELETE_WINDOW", self.delete_clicked)
@@ -78,7 +82,42 @@ class GameWindow(tk.Toplevel):
                                           GameWindow.button_width_next, GameWindow.button_height_next,
                                           self.next_clicked, GameWindow.width_ratio, 1.2, GameWindow.height_ratio, 0
                                           )
-        for i in range(100):
+        for i in range(self.stage_num):
+            rnd_now = random.randint(0, 1)
+            self.buttons['Delete' + str(i)] = GameButton(self, "./img/Delete.png",
+                                                         GameWindow.button_width_delete,
+                                                         GameWindow.button_height_delete,
+                                                         self.delete_clicked,
+                                                         random.random(), rnd_now,
+                                                         random.random(), 1 - rnd_now
+                                                         )
+        self.buttons['Player_'] = self.player_
+
+    def make_buttons_hell(self):
+        self.player_ = Player_(self, "./img/Player_.png", self.player__width, self.player__height,
+                               self.player__width / 2, self.player__height / 2, 5)
+
+        self.buttons['Up'] = GameButton(self, "./img/Up.png",
+                                        GameWindow.button_width_arrow, GameWindow.button_height_arrow,
+                                        self.up_clicked, random.uniform(0.3, 0.7), 0, random.uniform(0.3, 0.7), -1
+                                        )
+        self.buttons['Down'] = GameButton(self, "./img/Down.png",
+                                          GameWindow.button_width_arrow, GameWindow.button_height_arrow,
+                                          self.down_clicked, random.uniform(0.3, 0.7), 0, random.uniform(0.3, 0.7), 0
+                                          )
+        self.buttons['Left'] = GameButton(self, "./img/Left.png",
+                                          GameWindow.button_width_arrow, GameWindow.button_height_arrow,
+                                          self.left_clicked, random.uniform(0.3, 0.7), -1, random.uniform(0.3, 0.7), 0
+                                          )
+        self.buttons['Right'] = GameButton(self, "./img/Right.png",
+                                           GameWindow.button_width_arrow, GameWindow.button_height_arrow,
+                                           self.right_clicked, random.uniform(0.3, 0.7), 1, random.uniform(0.3, 0.7), 0
+                                           )
+        self.buttons['Next'] = GameButton(self, "./img/Next.png",
+                                          GameWindow.button_width_next, GameWindow.button_height_next,
+                                          self.next_clicked, random.uniform(0.3, 0.7), 0, random.uniform(0.3, 0.7), 0
+                                          )
+        for i in range(10):
             rnd_now = random.randint(0, 1)
             self.buttons['Delete' + str(i)] = GameButton(self, "./img/Delete.png",
                                                          GameWindow.button_width_delete,
@@ -241,6 +280,7 @@ class Score:
     stages = []
     score_board = None
     score_instance = None
+    stage_num = None
 
     def __init__(self, parent):
         Score.score_board = parent
@@ -248,17 +288,22 @@ class Score:
         parent.title('Score Board')
         self.font = tkFont.Font(family="Lucida Grande", size=30)
         self.text_score = tk.StringVar()
-        self.label_score = Label(parent, text='Score : ' + str(Score.score), font=self.font)
+        self.label_score = Label(parent,
+                                 text='Difficulty : ' + str(self.stage_num) + '\n'
+                                      'Max Score : ' + str(Person_Database.get_max_score(self.stage_num)) + '\n'
+                                      'Score : ' + str(self.score), font=self.font)
         self.label_score.pack()
 
     @classmethod
-    def game_start(cls, root):
+    def game_start(cls, root, stage_num):
         cls.stages.append(root)
+        cls.stage_num = stage_num
 
     @classmethod
     def new_stage(cls):
         cls.score = len(cls.stages) + 1
-        next_stage = GameWindow(cls.stages[-1], Score.score)
+        Person_Database.new_score(cls.stage_num, cls.score)
+        next_stage = GameWindow(cls.stages[-1], Score.score, cls.stage_num)
         Score.stages.append(next_stage)
         next_stage.title('stage' + str(Score.score))
         cls.score_instance.update()
@@ -278,7 +323,11 @@ class Score:
 
     @classmethod
     def update(cls):
-        cls.score_instance.label_score.configure(text='Score : ' + str(Score.score))
+        cls.score_instance.label_score.configure(text=
+                                                 'Difficulty : ' + str(cls.stage_num) + '\n'
+                                                 'Max Score : ' + str(Person_Database.get_max_score(cls.stage_num)) + '\n'
+                                                 'Score : ' + str(cls.score)
+                                                 )
 
 
 class LoginPage:
@@ -373,7 +422,7 @@ class LoginPage:
         try_login = Person_Database.login(username.get(), pwd.hexdigest())
         if try_login is True:
             self.make_status_frame()
-            GameMain.game_start(self.root)
+            StageSelect.make_select_frame(self.root)
         else:
             self.println(try_login)
 
@@ -404,11 +453,13 @@ class GameMain:
         pass
 
     @classmethod
-    def game_start(cls, root):
+    def game_start(cls, root, stage_num):
         cls.root = root
-        cls.stage = GameWindow(cls.root, 1)
+        cls.stage_num = stage_num
+        cls.root.geometry(str(GameWindow.initial_width)+'x'+str(GameWindow.initial_height))
+        cls.stage = GameWindow(cls.root, 1, cls.stage_num)
         cls.stage.title("stage" + str(1))
-        Score.game_start(cls.stage)
+        Score.game_start(cls.stage, cls.stage_num)
         cls.score = Score(cls.root)
         cls.root.update()
         cls.root.lift()
@@ -420,10 +471,39 @@ class GameMain:
         cls.stage.canvas.bind_all('<KeyPress-space>', lambda x: cls.stage.player_.space())
 
 
+class StageSelect:
+    root = None
+    select_frame = None
+    stage_num = None
+    stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
+
+    def __init__(self):
+        pass
+
+    @classmethod
+    def make_select_frame(cls, root):
+        cls.root = root
+        cls.root.geometry('200x400')
+        cls.select_frame = LabelFrame(cls.root, text='Login')
+        cls.stage_num = IntVar()
+
+        for ind in range(7):
+            Radiobutton(cls.select_frame, text=cls.stage_name[ind], value=ind, variable=cls.stage_num).pack()
+        Button(cls.select_frame, text="Game Start", command=cls.button_clicked).pack()
+
+        cls.select_frame.pack()
+
+    @classmethod
+    def button_clicked(cls):
+        cls.select_frame.pack_forget()
+        GameMain.game_start(cls.root, cls.stage_num.get())
+
+
 class Person_Database:
     json_data = None
     clients = None
     json_path = './clients.json'
+    now_user = None
 
     def __init__(self):
         pass
@@ -435,11 +515,17 @@ class Person_Database:
         cls.clients = cls.json_data["clients"]
 
     @classmethod
+    def save_database(cls):
+        with open(cls.json_path, 'w') as f:
+            json.dump(cls.json_data, f, indent=4)
+
+    @classmethod
     def login(cls, ID, passwd_in):
         if cls.clients is None:
             return "database error"
         for x in cls.clients:
             if x["ID"] == ID and x["password"] == passwd_in:
+                cls.now_user = x
                 return True
         return "invalid ID"
 
@@ -472,9 +558,14 @@ class Person_Database:
         return "password not match"
 
     @classmethod
-    def save_database(cls):
-        with open(cls.json_path, 'w') as f:
-            json.dump(cls.json_data, f, indent=4)
+    def get_max_score(cls, stage_num):
+        return cls.now_user["max_score"][StageSelect.stage_name[stage_num]]
+
+    @classmethod
+    def new_score(cls, stage_num, now_score):
+        if cls.now_user["max_score"][StageSelect.stage_name[stage_num]] < now_score:
+            cls.now_user["max_score"][StageSelect.stage_name[stage_num]] = now_score
+            cls.save_database()
 
     @classmethod
     def clear_database(cls):

@@ -1,13 +1,21 @@
-from tkinter import *
-from functools import partial
-from Classes import *
-import hashlib
+import socket
+import config
+# reference : https://watchout31337.tistory.com/117
 
-# pwd_again = hashlib.sha256()
-# pwd_again.update('hello'.encode('utf-8'))
-# print(pwd.hexdigest() is pwd_again.hexdigest())
-Person_Database.load_database()
-pwd = hashlib.sha256()
-pwd.update('hello'.encode('utf-8'))
-print(Person_Database.register("serv2", pwd.hexdigest(), pwd.hexdigest()))
-Person_Database.save_database()
+HOST = config.SERVER_IP
+PORT = config.SERVER_PORT
+
+client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client_socket.connect((HOST, PORT))
+
+while True:
+    message = input('Enter Message: ')
+    if message == 'quit':
+        break
+
+    client_socket.send(message.encode())
+    data = client_socket.recv(1024)
+
+    print('received from the server:', repr(data.decode()))
+
+client_socket.close()
