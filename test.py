@@ -6,7 +6,7 @@ HOST = config.SERVER_IP
 PORT = config.SERVER_PORT
 
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
+client_socket.connect((HOST, 19032))
 
 while True:
     message = input('Enter Message: ')
