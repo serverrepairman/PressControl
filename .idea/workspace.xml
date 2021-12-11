@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 6.2">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes.py" afterDir="false" />
-    </list>
+    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 7.0" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -132,7 +129,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1638885018259</updated>
-      <workItem from="1639196097942" duration="15600000" />
+      <workItem from="1639196097942" duration="16373000" />
     </task>
     <task id="LOCAL-00001">
       <created>1638944176076</created>
@@ -414,7 +411,14 @@
       <option name="project" value="LOCAL" />
       <updated>1639212651358</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="version 7.0">
+      <created>1639214989243</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1639214989243</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -448,6 +452,7 @@
     <MESSAGE value="version 6.0" />
     <MESSAGE value="version 6.1" />
     <MESSAGE value="version 6.2" />
-    <option name="LAST_COMMIT_MESSAGE" value="version 6.2" />
+    <MESSAGE value="version 7.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="version 7.0" />
   </component>
 </project>
