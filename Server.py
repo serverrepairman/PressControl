@@ -4,7 +4,8 @@ import json
 # from Classes import *
 # reference : https://watchout31337.tistory.com/117
 
-class Person_Database_Server:
+
+class PersonDatabaseServer:
     json_data = None
     clients = None
     json_path = './clients.json'
