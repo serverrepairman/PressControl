@@ -41,7 +41,7 @@ class PersonServer:
                     break
 
                 print('Received from ' + address[0], ':', address[1], data.decode())
-                cls.parse_data(data, address)
+                start_new_thread(cls.parse_data, (data, address))
 
             except ConnectionResetError as e:
                 print('Disconnected by ' + address[0], ':', address[1])
@@ -53,7 +53,9 @@ class PersonServer:
     def parse_data(cls, data, address):
         data_json = json.loads(data)
         command = getattr(PersonDatabase, data_json['command'])
-        cls.send(data_json['command'], command(*tuple(data_json['args']), **data_json['kwargs']), address)
+        message = command(*tuple(data_json['args']), **data_json['kwargs'])
+        if message is not None:
+            cls.send(data_json['command'], message, address)
 
     @classmethod
     def send(cls, command, message, address):
@@ -66,8 +68,8 @@ class PersonDatabase:
     json_data = None
     clients = None
     json_path = './clients.json'
-    now_user = None
     stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
+    now_user = {}
 
     def __init__(self):
         pass
@@ -77,19 +79,21 @@ class PersonDatabase:
         with open(cls.json_path, 'r') as f:
             cls.json_data = json.load(f)
         cls.clients = cls.json_data["clients"]
+        return "Database Loaded"
 
     @classmethod
     def save_database(cls):
         with open(cls.json_path, 'w') as f:
             json.dump(cls.json_data, f, indent=4)
+        return "Database Saved"
 
     @classmethod
-    def login(cls, ID, passwd_in):
+    def login(cls, ID, passwd_in, address):
         if cls.clients is None:
             return "database error"
         for x in cls.clients:
             if x["ID"] == ID and x["password"] == passwd_in:
-                cls.now_user = x
+                cls.now_user[address] = x
                 return True
         return "invalid ID"
 
@@ -122,18 +126,21 @@ class PersonDatabase:
         return "password not match"
 
     @classmethod
-    def get_max_score(cls, stage_num):
-        return cls.now_user["max_score"][cls.stage_name[stage_num]]
+    def get_max_score(cls, address, stage_num):
+        return cls.now_user[address]["max_score"][cls.stage_name[stage_num]]
 
     @classmethod
-    def new_score(cls, stage_num, now_score):
-        if cls.now_user["max_score"][cls.stage_name[stage_num]] < now_score:
-            cls.now_user["max_score"][cls.stage_name[stage_num]] = now_score
+    def new_score(cls, address, stage_num, now_score):
+        if cls.now_user[address]["max_score"][cls.stage_name[stage_num]] < now_score:
+            cls.now_user[address]["max_score"][cls.stage_name[stage_num]] = now_score
             cls.save_database()
+        return None
 
     @classmethod
     def clear_database(cls):
         cls.clients.clear()
+        cls.save_database()
+        return None
 
     @classmethod
     def test_method(cls, *args, **kwargs):

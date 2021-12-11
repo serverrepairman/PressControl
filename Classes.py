@@ -12,6 +12,7 @@ import hashlib
 import socket
 import config
 from _thread import *
+from collections import deque
 
 
 class GameWindow(tk.Toplevel):
@@ -284,6 +285,7 @@ class Score:
     score_board = None
     score_instance = None
     stage_num = None
+    max_score = 0
 
     def __init__(self, parent):
         Score.score_board = parent
@@ -293,7 +295,7 @@ class Score:
         self.text_score = tk.StringVar()
         self.label_score = Label(parent,
                                  text=StageSelect.stage_name[self.stage_num] + '\n'
-                                      'Max Score : ' + str(Person_Database.get_max_score(self.stage_num)) + '\n'
+                                      'Max Score : ' + str(self.max_score) + '\n'
                                       'Score : ' + str(self.score), font=self.font)
         self.label_score.pack()
 
@@ -330,7 +332,7 @@ class Score:
     def update(cls):
         cls.score_instance.label_score.configure(text=
                                                  str(cls.stage_num) + '\n'
-                                                 'Max Score : ' + str(Person_Database.get_max_score(cls.stage_num)) + '\n'
+                                                 'Max Score : ' + str(cls.max_score) + '\n'
                                                  'Score : ' + str(cls.score)
                                                  )
 
@@ -453,6 +455,7 @@ class GameMain:
     stage = None
     score = None
     root = None
+    stage_num = 0
 
     def __init__(self):
         pass
@@ -505,80 +508,60 @@ class StageSelect:
 
 
 class Person_Database:
-    json_data = None
-    clients = None
-    json_path = './clients.json'
-    now_user = None
 
     def __init__(self):
         pass
 
     @classmethod
     def load_database(cls):
-        with open(cls.json_path, 'r') as f:
-            cls.json_data = json.load(f)
-        cls.clients = cls.json_data["clients"]
+        try:
+            Server_Connect.connect_server(config.SERVER_IP, config.SERVER_PORT)
+            cls.send_message("load_database")
+        except:
+            print("failed to load database")
 
     @classmethod
     def save_database(cls):
-        with open(cls.json_path, 'w') as f:
-            json.dump(cls.json_data, f, indent=4)
+        cls.send_message("save_database")
 
     @classmethod
     def login(cls, ID, passwd_in):
-        if cls.clients is None:
-            return "database error"
-        for x in cls.clients:
-            if x["ID"] == ID and x["password"] == passwd_in:
-                cls.now_user = x
-                return True
-        return "invalid ID"
+        cls.send_message("login", ID, passwd_in)
+        return cls.receive_message("login")
 
     @classmethod
     def register(cls, ID, passwd_in, passwd_again):
-        if cls.clients is None:
-            return "database error"
-        for x in cls.clients:
-            if x["ID"] == ID:
-                return "ID already exist"
-        if passwd_in == passwd_again:
-            cls.clients.append(
-                {
-                    "ID": ID,
-                    "password": passwd_in,
-                    "max_score":
-                        {
-                            "hell": 0,
-                            "hardcore": 0,
-                            "very hard": 0,
-                            "hard": 0,
-                            "normal": 0,
-                            "easy": 0,
-                            "peaceful": 0
-                        }
-                }
-            )
-            cls.save_database()
-            return True
-        return "password not match"
-
-    @classmethod
-    def get_max_score(cls, stage_num):
-        return cls.now_user["max_score"][StageSelect.stage_name[stage_num]]
+        cls.send_message("register", ID, passwd_in, passwd_again)
+        return cls.receive_message("register")
 
     @classmethod
     def new_score(cls, stage_num, now_score):
-        if cls.now_user["max_score"][StageSelect.stage_name[stage_num]] < now_score:
-            cls.now_user["max_score"][StageSelect.stage_name[stage_num]] = now_score
-            cls.save_database()
+        cls.send_message("new_score", stage_num, now_score)
 
     @classmethod
     def clear_database(cls):
-        cls.clients.clear()
+        cls.send_message("clear_database")
+
+    @classmethod
+    def send_message(cls, command, *args, **kwargs):
+        message_json = {
+            "command": command,
+            "args": args,
+            "kwargs": kwargs
+        }
+        Server_Connect.send(json.dumps(message_json))
+
+    @classmethod
+    def receive_message(cls, command):
+        while True:
+            if command in Server_Connect.request_queue:
+                if len(Server_Connect.request_queue[command]):
+                    return Server_Connect.request_queue[command].popleft()
 
 
 class Server_Connect:
     client_socket = None
+    request_queue = {}
 
     def __init__(self):
         pass
@@ -596,8 +579,12 @@ class Server_Connect:
     def receive(cls):
         while True:
             data = cls.client_socket.recv(1024)
-            print('received from the server:', repr(data.decode()))
-
+            data_json = json.loads(data.decode)
+            if data_json["command"] in cls.request_queue:
+                cls.request_queue[data_json["command"]].append(data_json["message"])
+            else:
+                cls.request_queue[data_json["command"]] = deque([data_json["message"]])
+            print('received from the server:', repr(data_json))
 
     @classmethod
     def send(cls, message):
