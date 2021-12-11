@@ -53,7 +53,7 @@ class PersonServer:
     def parse_data(cls, data, address):
         data_json = json.loads(data)
         command = getattr(PersonDatabase, data_json['command'])
-        message = command(*tuple(data_json['args']), **data_json['kwargs'])
+        message = command(address, *tuple(data_json['args']), **data_json['kwargs'])
         if message is not None:
             cls.send(data_json['command'], message, address)
 
@@ -88,7 +88,7 @@ class PersonDatabase:
         return "Database Saved"
 
     @classmethod
-    def login(cls, ID, passwd_in, address):
+    def login(cls, address, ID, passwd_in):
         if cls.clients is None:
             return "database error"
         for x in cls.clients:
@@ -98,7 +98,7 @@ class PersonDatabase:
         return "invalid ID"
 
     @classmethod
-    def register(cls, ID, passwd_in, passwd_again):
+    def register(cls, address, ID, passwd_in, passwd_again):
         if cls.clients is None:
             return "database error"
         for x in cls.clients:
@@ -137,13 +137,13 @@ class PersonDatabase:
         return None
 
     @classmethod
-    def clear_database(cls):
+    def clear_database(cls, address):
         cls.clients.clear()
         cls.save_database()
         return None
 
     @classmethod
-    def test_method(cls, *args, **kwargs):
+    def test_method(cls, address, *args, **kwargs):
         print('test completed. receive message : '+repr(args)+repr(kwargs))
         return 'test completed. receive message : '+repr(args)+repr(kwargs)
 

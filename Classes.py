@@ -514,11 +514,10 @@ class Person_Database:
 
     @classmethod
     def load_database(cls):
-        try:
+        # try:
             Server_Connect.connect_server(config.SERVER_IP, config.SERVER_PORT)
             cls.send_message("load_database")
-        except:
-            print("failed to load database")
+
 
     @classmethod
     def save_database(cls):
@@ -549,7 +548,8 @@ class Person_Database:
             "args": args,
             "kwargs": kwargs
         }
-        Server_Connect.send(json.dumps(message_json))
+        print(json.dumps(message_json))
+        start_new_thread(Server_Connect.send, (json.dumps(message_json),))
 
     @classmethod
     def receive_message(cls, command):
@@ -571,20 +571,22 @@ class Server_Connect:
 
         cls.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         cls.client_socket.connect((ip, port))
-        start_new_thread(cls.receive())
-
-        cls.client_socket.close()
+        print("connected to "+str(ip)+str(port))
+        start_new_thread(cls.receive, ('dummy',))
 
     @classmethod
-    def receive(cls):
+    def receive(cls, *args):
+        print("receive")
         while True:
             data = cls.client_socket.recv(1024)
-            data_json = json.loads(data.decode)
+            data_json = json.loads(data.decode())
             if data_json["command"] in cls.request_queue:
                 cls.request_queue[data_json["command"]].append(data_json["message"])
             else:
                 cls.request_queue[data_json["command"]] = deque([data_json["message"]])
             print('received from the server:', repr(data_json))
+
+        cls.client_socket.close()
 
     @classmethod
     def send(cls, message):
