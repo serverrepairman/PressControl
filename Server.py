@@ -4,8 +4,15 @@ import json
 # from Classes import *
 # reference : https://watchout31337.tistory.com/117
 
+class Person_Database_Server:
+    json_data = None
+    clients = None
+    json_path = './clients.json'
+    now_user = None
+    stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
 
-class PersonDatabaseServer:
+    def __init__(self):
+        pass
 
     @staticmethod
     def threaded(client_socket, addr):
@@ -40,20 +47,9 @@ class PersonDatabaseServer:
             print('wait')
 
             client_socket, addr = server_socket.accept()
-            start_new_thread(cls.threaded(client_socket, addr))
+            start_new_thread(cls.threaded(client_socket, addr), ())
 
         server_socket.close()
-
-
-class Person_Database_Server:
-    json_data = None
-    clients = None
-    json_path = './clients.json'
-    now_user = None
-    stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
-
-    def __init__(self):
-        pass
 
     @classmethod
     def load_database(cls):

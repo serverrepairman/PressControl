@@ -578,7 +578,6 @@ class Person_Database:
 class Server_Connect:
     client_socket = None
 
-
     def __init__(self):
         pass
 
