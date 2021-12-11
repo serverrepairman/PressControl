@@ -75,14 +75,14 @@ class PersonDatabase:
         pass
 
     @classmethod
-    def load_database(cls):
+    def load_database(cls, address):
         with open(cls.json_path, 'r') as f:
             cls.json_data = json.load(f)
         cls.clients = cls.json_data["clients"]
         return "Database Loaded"
 
     @classmethod
-    def save_database(cls):
+    def save_database(cls, address):
         with open(cls.json_path, 'w') as f:
             json.dump(cls.json_data, f, indent=4)
         return "Database Saved"
