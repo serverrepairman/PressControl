@@ -52,7 +52,7 @@ class PersonServer:
     @classmethod
     def parse_data(cls, data):
         data_json = json.loads(data)
-        command = getattr(sys.modules[__name__], data_json['command'])
+        command = getattr(sys.modules[__name__], 'PersonServer.'+data_json['command'])
         command(data_json['message'])
 
     @classmethod
