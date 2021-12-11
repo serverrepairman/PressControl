@@ -292,7 +292,7 @@ class Score:
         self.font = tkFont.Font(family="Lucida Grande", size=30)
         self.text_score = tk.StringVar()
         self.label_score = Label(parent,
-                                 text='Difficulty : ' + str(self.stage_num) + '\n'
+                                 text=StageSelect.stage_name[self.stage_num] + '\n'
                                       'Max Score : ' + str(Person_Database.get_max_score(self.stage_num)) + '\n'
                                       'Score : ' + str(self.score), font=self.font)
         self.label_score.pack()
@@ -321,13 +321,15 @@ class Score:
 
     @classmethod
     def game_over(cls):
-        cls.score_instance.label_score.configure(text='Game Over \n Score : ' + str(Score.score))
+        cls.score_instance.label_score.configure(text=StageSelect.stage_name[cls.stage_num] + '\n'
+                                                      'Game Over \n ' +
+                                                      'Score : ' + str(Score.score))
         cls.stages[0].destroy()
 
     @classmethod
     def update(cls):
         cls.score_instance.label_score.configure(text=
-                                                 'Difficulty : ' + str(cls.stage_num) + '\n'
+                                                 str(cls.stage_num) + '\n'
                                                  'Max Score : ' + str(Person_Database.get_max_score(cls.stage_num)) + '\n'
                                                  'Score : ' + str(cls.score)
                                                  )

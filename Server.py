@@ -5,39 +5,12 @@ import json
 # reference : https://watchout31337.tistory.com/117
 
 
-class PersonDatabaseServer:
-    json_data = None
-    clients = None
-    json_path = './clients.json'
-    now_user = None
-    stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
-
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def threaded(client_socket, addr):
-        print('Connected by :', addr[0], ':', addr[1])
-
-        while True:
-            try:
-                data = client_socket.recv(1024)
-
-                if not data:
-                    print('Disconnected by ' + addr[0], ':', addr[1])
-                    break
-
-                print('Received from ' + addr[0], ':', addr[1], data.decode())
-                client_socket.send(data)
-
-            except ConnectionResetError as e:
-                print('Disconnected by ' + addr[0], ':', addr[1])
-                break
-
-        client_socket.close()
+class PersonServer:
+    clients = {}
 
     @classmethod
     def start_server(cls):
+        PersonDatabase.load_database()
         server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server_socket.bind((HOST, PORT))
@@ -47,10 +20,49 @@ class PersonDatabaseServer:
         while True:
             print('wait')
 
-            client_socket, addr = server_socket.accept()
-            start_new_thread(cls.threaded, (client_socket, addr))
+            client_socket, address = server_socket.accept()
+            start_new_thread(cls.client_thread, (client_socket, address))
+            cls.clients[address] = client_socket
 
         server_socket.close()
+
+    @classmethod
+    def client_thread(cls, client_socket, address):
+        print('Connected by :', address[0], ':', address[1])
+
+        while True:
+            try:
+                data = client_socket.recv(1024)
+
+                if not data:
+                    print('Disconnected by ' + address[0], ':', address[1])
+                    cls.clients.pop(address)
+                    break
+
+                print('Received from ' + address[0], ':', address[1], data.decode())
+                cls.parse_data(data)
+
+            except ConnectionResetError as e:
+                print('Disconnected by ' + address[0], ':', address[1])
+                break
+
+        client_socket.close()
+
+    @classmethod
+    def parse_data(cls, data):
+        data_json = json.loads(data)
+
+
+
+class PersonDatabase:
+    json_data = None
+    clients = None
+    json_path = './clients.json'
+    now_user = None
+    stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
+
+    def __init__(self):
+        pass
 
     @classmethod
     def load_database(cls):
@@ -118,4 +130,4 @@ class PersonDatabaseServer:
 
 HOST = ''
 PORT = 19032
-PersonDatabaseServer.start_server()
+PersonServer.start_server()
