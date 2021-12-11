@@ -41,7 +41,7 @@ class PersonServer:
                     break
 
                 print('Received from ' + address[0], ':', address[1], data.decode())
-                cls.parse_data(data)
+                cls.parse_data(data, address)
 
             except ConnectionResetError as e:
                 print('Disconnected by ' + address[0], ':', address[1])
