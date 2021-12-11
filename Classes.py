@@ -514,9 +514,10 @@ class Person_Database:
 
     @classmethod
     def load_database(cls):
-        # try:
+        try:
             Server_Connect.connect_server(config.SERVER_IP, config.SERVER_PORT)
-            cls.send_message("load_database")
+        except:
+            print("connection failed")
 
 
     @classmethod
