@@ -4,7 +4,6 @@ from _thread import *
 import json
 # from Classes import *
 # reference : https://watchout31337.tistory.com/117
-import mmsystem
 
 
 class PersonServer:
