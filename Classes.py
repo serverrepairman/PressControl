@@ -293,6 +293,9 @@ class Score:
         parent.title('Score Board')
         self.font = tkFont.Font(family="Lucida Grande", size=30)
         self.text_score = tk.StringVar()
+        Person_Database.get_max_score(self.stage_num)
+        Score.max_score = Person_Database.receive_message("get_max_score")
+        print(Score.max_score)
         self.label_score = Label(parent,
                                  text=StageSelect.stage_name[self.stage_num] + '\n'
                                       'Max Score : ' + str(self.max_score) + '\n'
@@ -308,6 +311,9 @@ class Score:
     def new_stage(cls):
         cls.score = len(cls.stages) + 1
         Person_Database.new_score(cls.stage_num, cls.score)
+        print(cls.max_score, cls.score)
+        cls.max_score = max(cls.score, cls.max_score)
+        print(cls.max_score)
         next_stage = GameWindow(cls.stages[-1], Score.score, cls.stage_num)
         Score.stages.append(next_stage)
         next_stage.title('stage' + str(Score.score))
@@ -331,7 +337,7 @@ class Score:
     @classmethod
     def update(cls):
         cls.score_instance.label_score.configure(text=
-                                                 str(cls.stage_num) + '\n'
+                                                 StageSelect.stage_name[cls.stage_num] + '\n'
                                                  'Max Score : ' + str(cls.max_score) + '\n'
                                                  'Score : ' + str(cls.score)
                                                  )
@@ -352,8 +358,10 @@ class LoginPage:
 
     def make_login_frame(self):
         if self.frame_register is not None:
+            self.log_register.configure(text='')
             self.frame_register.pack_forget()
         if self.frame_login is not None:
+            self.log = self.log_login
             self.frame_login.pack()
             return
 
@@ -375,15 +383,17 @@ class LoginPage:
         loginButton = Button(self.frame_login, text="Login", command=self.validatelogin).grid(row=4, column=0)
         registerButton = Button(self.frame_login, text="Register", command=self.make_register_frame).grid(row=4,
                                                                                                           column=1)
-        self.log = Label(self.frame_login, text='')
+        self.log = self.log_login = Label(self.frame_login, text='')
         self.log.grid(row=5, column=0, rowspan=2)
 
         self.frame_login.pack()
 
     def make_register_frame(self):
         if self.frame_login is not None:
+            self.log_login.configure(text='')
             self.frame_login.pack_forget()
         if self.frame_register is not None:
+            self.log = self.log_register
             self.frame_register.pack()
             return
 
@@ -407,7 +417,7 @@ class LoginPage:
                                                                                                           column=0)
 
         # self.scrollbar = Scrollbar(self.frame_register).grid(row=5, column=0, rowspan=2, columnspan=5)
-        self.log = Label(self.frame_register, text='')
+        self.log = self.log_register = Label(self.frame_register, text='')
         self.log.grid(row=5, column=0, rowspan=2)
 
         self.frame_register.pack()
@@ -519,7 +529,6 @@ class Person_Database:
         except:
             print("connection failed")
 
-
     @classmethod
     def save_database(cls):
         cls.send_message("save_database")
@@ -539,6 +548,10 @@ class Person_Database:
         cls.send_message("new_score", stage_num, now_score)
 
     @classmethod
+    def get_max_score(cls, stage_num):
+        cls.send_message("get_max_score", stage_num)
+
+    @classmethod
     def clear_database(cls):
         cls.send_message("clear_database")
 
@@ -549,7 +562,7 @@ class Person_Database:
             "args": args,
             "kwargs": kwargs
         }
-        print(json.dumps(message_json))
+        print('send to server : ' + json.dumps(message_json))
         start_new_thread(Server_Connect.send, (json.dumps(message_json),))
 
     @classmethod
