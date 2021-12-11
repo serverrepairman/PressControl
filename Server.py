@@ -1,7 +1,7 @@
 import socket
 from _thread import *
 import json
-from Classes import *
+# from Classes import *
 # reference : https://watchout31337.tistory.com/117
 
 
@@ -45,11 +45,12 @@ class PersonDatabaseServer:
         server_socket.close()
 
 
-class Person_Database:
+class Person_Database_Server:
     json_data = None
     clients = None
     json_path = './clients.json'
     now_user = None
+    stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
 
     def __init__(self):
         pass
@@ -105,12 +106,12 @@ class Person_Database:
 
     @classmethod
     def get_max_score(cls, stage_num):
-        return cls.now_user["max_score"][StageSelect.stage_name[stage_num]]
+        return cls.now_user["max_score"][cls.stage_name[stage_num]]
 
     @classmethod
     def new_score(cls, stage_num, now_score):
-        if cls.now_user["max_score"][StageSelect.stage_name[stage_num]] < now_score:
-            cls.now_user["max_score"][StageSelect.stage_name[stage_num]] = now_score
+        if cls.now_user["max_score"][cls.stage_name[stage_num]] < now_score:
+            cls.now_user["max_score"][cls.stage_name[stage_num]] = now_score
             cls.save_database()
 
     @classmethod

@@ -5,6 +5,8 @@ import config
 HOST = config.SERVER_IP
 PORT = config.SERVER_PORT
 
+print("connecting")
+
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((HOST, 19032))
 
