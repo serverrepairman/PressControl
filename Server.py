@@ -48,7 +48,7 @@ class PersonDatabaseServer:
             print('wait')
 
             client_socket, addr = server_socket.accept()
-            start_new_thread(cls.threaded(client_socket, addr), ())
+            start_new_thread(cls.threaded, (client_socket, addr))
 
         server_socket.close()
 
