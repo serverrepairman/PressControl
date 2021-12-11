@@ -1,3 +1,4 @@
+import json
 import socket
 import config
 # reference : https://watchout31337.tistory.com/117
@@ -17,6 +18,7 @@ while True:
 
     client_socket.send(message.encode())
     data = client_socket.recv(1024)
+    data_json = json.loads(data)
 
     print('received from the server:', repr(data.decode()))
 

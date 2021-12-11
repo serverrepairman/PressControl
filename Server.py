@@ -50,14 +50,16 @@ class PersonServer:
         client_socket.close()
 
     @classmethod
-    def parse_data(cls, data):
+    def parse_data(cls, data, address):
         data_json = json.loads(data)
-        command = getattr(PersonServer, data_json['command'])
-        command(data_json['message'])
+        command = getattr(PersonDatabase, data_json['command'])
+        cls.send(data_json['command'], command(data_json['message']), address)
 
     @classmethod
-    def test_method(cls, message):
-        print('test completed. receive message : '+message)
+    def send(cls, command, message, address):
+        data_json = {"command": command, "message": message}
+        data = json.dumps(data_json)
+        cls.clients[address].send(data.encode())
 
 
 class PersonDatabase:
@@ -132,6 +134,11 @@ class PersonDatabase:
     @classmethod
     def clear_database(cls):
         cls.clients.clear()
+
+    @classmethod
+    def test_method(cls, message):
+        print('test completed. receive message : '+message)
+        return
 
 
 HOST = ''
