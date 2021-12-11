@@ -1,2 +1,3 @@
 import Server
-Server.PersonDatabase.clear_database()
+Server.PersonDatabase.load_database()
+Server.PersonDatabase.clear_database("")
