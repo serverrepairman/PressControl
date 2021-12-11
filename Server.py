@@ -95,7 +95,7 @@ class PersonDatabase:
             if x["ID"] == ID and x["password"] == passwd_in:
                 cls.now_user[address] = x
                 return True
-        return "invalid ID"
+        return "invalid ID/Password"
 
     @classmethod
     def register(cls, address, ID, passwd_in, passwd_again):

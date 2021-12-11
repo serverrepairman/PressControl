@@ -213,6 +213,7 @@ class GameButton:
             return
         if abs(self.root.player_.x - self.x) < (self.width + self.root.player_.width) / 2 and \
                 abs(self.root.player_.y - self.y) < (self.height + self.root.player_.height) / 2:
+            print(self.root.index, self.command.__name__)
             self.clicked()
 
     def clicked(self):
@@ -286,6 +287,7 @@ class Score:
     score_instance = None
     stage_num = None
     max_score = 0
+    root = None
 
     def __init__(self, parent):
         Score.score_board = parent
@@ -304,8 +306,10 @@ class Score:
 
     @classmethod
     def game_start(cls, root, stage_num):
-        cls.stages.append(root)
+        cls.root = root
+        cls.stages.append(cls.root)
         cls.stage_num = stage_num
+        cls.score = 1
 
     @classmethod
     def new_stage(cls):
@@ -332,7 +336,10 @@ class Score:
         cls.score_instance.label_score.configure(text=StageSelect.stage_name[cls.stage_num] + '\n'
                                                       'Game Over \n ' +
                                                       'Score : ' + str(Score.score))
+        cls.restart_button = Button(text="Retry?", command=cls.game_restart)
+        cls.restart_button.pack()
         cls.stages[0].destroy()
+        cls.stages = []
 
     @classmethod
     def update(cls):
@@ -341,6 +348,12 @@ class Score:
                                                  'Max Score : ' + str(cls.max_score) + '\n'
                                                  'Score : ' + str(cls.score)
                                                  )
+
+    @classmethod
+    def game_restart(cls):
+        cls.score_instance.label_score.pack_forget()
+        cls.restart_button.pack_forget()
+        StageSelect.make_select_frame(StageSelect.root)
 
 
 class LoginPage:
