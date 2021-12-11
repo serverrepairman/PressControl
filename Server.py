@@ -53,7 +53,7 @@ class PersonServer:
     def parse_data(cls, data, address):
         data_json = json.loads(data)
         command = getattr(PersonDatabase, data_json['command'])
-        cls.send(data_json['command'], command(data_json['message']), address)
+        cls.send(data_json['command'], command(*tuple(data_json['args']), **data_json['kwargs']), address)
 
     @classmethod
     def send(cls, command, message, address):
@@ -136,9 +136,9 @@ class PersonDatabase:
         cls.clients.clear()
 
     @classmethod
-    def test_method(cls, message):
-        print('test completed. receive message : '+message)
-        return
+    def test_method(cls, *args, **kwargs):
+        print('test completed. receive message : '+repr(args)+repr(kwargs))
+        return 'test completed. receive message : '+repr(args)+repr(kwargs)
 
 
 HOST = ''

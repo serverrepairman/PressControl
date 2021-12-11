@@ -20,6 +20,6 @@ while True:
     data = client_socket.recv(1024)
     data_json = json.loads(data)
 
-    print('received from the server:', repr(data.decode()))
+    print('received from the server:', repr(data_json))
 
 client_socket.close()

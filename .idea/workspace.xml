@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 5.1">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 5.2">
       <change beforePath="$PROJECT_DIR$/Server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
@@ -133,7 +132,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1638885018259</updated>
-      <workItem from="1639196097942" duration="6624000" />
+      <workItem from="1639196097942" duration="7094000" />
     </task>
     <task id="LOCAL-00001">
       <created>1638944176076</created>
@@ -366,7 +365,21 @@
       <option name="project" value="LOCAL" />
       <updated>1639203145592</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="version 5.1">
+      <created>1639203891372</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1639203891372</updated>
+    </task>
+    <task id="LOCAL-00035" summary="version 5.2">
+      <created>1639203948047</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1639203948047</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -394,6 +407,7 @@
     <MESSAGE value="version 4.2(no server complete version)" />
     <MESSAGE value="version 5.0(with server)" />
     <MESSAGE value="version 5.1" />
-    <option name="LAST_COMMIT_MESSAGE" value="version 5.1" />
+    <MESSAGE value="version 5.2" />
+    <option name="LAST_COMMIT_MESSAGE" value="version 5.2" />
   </component>
 </project>
