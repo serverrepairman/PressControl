@@ -539,6 +539,7 @@ class ServerScoreBoard:
     server_scoreboard = None
     server_scoreboard_file = None
     treeview = None
+    sort_as = None
     column_name = ["ID", "peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
     now_sort_index = 0
 
@@ -558,28 +559,31 @@ class ServerScoreBoard:
         cls.treeview = tkinter.ttk.Treeview(cls.server_scoreboard, columns=cls.column_name, displaycolumns=cls.column_name)
         cls.treeview.pack()
 
-        sort_as = Label(cls.server_scoreboard, text="Sorted by ID")
-        sort_as.pack()
+        cls.sort_as = Label(cls.server_scoreboard, text="Sorted by ID")
+        cls.sort_as.pack()
 
         refresh_button = Button(cls.server_scoreboard, text="refresh", command=cls.refresh_table)
         refresh_button.pack()
 
         cls.treeview.column("#0", width=50, )
-        cls.treeview.heading("#0", text="rank", command=lambda: cls.re_sort(0))
+        cls.treeview.heading("#0", text="rank")
         cls.treeview.column("#1", width=100, )
-        cls.treeview.heading("#1", text="ID", command=lambda: cls.re_sort(1))
+        cls.treeview.heading("#1", text="ID", command=lambda: cls.re_sort(0, "ID"))
         for ind, now_name in enumerate(cls.column_name):
-            if ind:
+            if ind > 0:
                 cls.treeview.column("#"+str(ind+1), width=70, )
-                cls.treeview.heading("#"+str(ind+1), text=now_name, command=lambda: cls.re_sort(ind+1))
+                cls.treeview.heading("#"+str(ind+1), text=now_name, command=lambda: cls.re_sort(ind, now_name))
+                print(ind, now_name)
 
         for i in range(len(cls.server_scoreboard_file)):
             cls.treeview.insert('', 'end', text=i, values=tuple(cls.server_scoreboard_file[i]), iid=str(i) + "번")
 
     @classmethod
-    def re_sort(cls, index):
+    def re_sort(cls, index, now_name):
+        print(index, now_name)
         cls.now_sort_index = index
-        cls.server_scoreboard_file.sort(key=lambda val: val[index])
+        cls.server_scoreboard_file.sort(key=lambda val: (val[index], val[0]), reverse=True)
+        cls.sort_as.config(text="Sorted by " + now_name)
         cls.update()
 
 
