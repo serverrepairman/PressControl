@@ -523,8 +523,8 @@ class StageSelect:
         for ind in range(7):
             Radiobutton(cls.select_frame, text=cls.stage_name[ind], value=ind, variable=cls.stage_num).pack()
         Button(cls.select_frame, text="Game Start", command=cls.button_clicked).pack()
-        cls.server_score_board = Button(cls.select_frame, text="Server ScoreBoard",
-                                         command=lambda: ServerScoreBoard.make_frame(cls.root))
+        Button(cls.select_frame, text="Server ScoreBoard",
+                                         command=lambda: ServerScoreBoard.make_frame(cls.root)).pack()
 
         cls.select_frame.pack()
 
@@ -538,7 +538,9 @@ class ServerScoreBoard:
     root = None
     server_scoreboard = None
     server_scoreboard_file = None
+    treeview = None
     column_name = ["ID", "peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
+    now_sort_index = 0
 
     @classmethod
     def make_frame(cls, root):
@@ -547,27 +549,51 @@ class ServerScoreBoard:
         cls.server_scoreboard_file = Person_Database.receive_message("get_server_scoreboard")
         cls.server_scoreboard = tkinter.Toplevel(cls.root)
         cls.server_scoreboard.title('Server ScoreBoard')
-        cls.server_scoreboard.geometry("540x300+100+100")
+        cls.server_scoreboard.geometry("700x300+100+100")
         cls.server_scoreboard.resizable(False, False)
 
-        lbl = tkinter.Label(cls.server_scoreboard, text="Global ScoreBoard")
-        lbl.pack()
+        title = tkinter.Label(cls.server_scoreboard, text="Global ScoreBoard")
+        title.pack()
 
-        # ﻿표 생성하기. colums는 컬럼 이름, displaycolums는 실행될 때 보여지는 순서다.
-        treeview = tkinter.ttk.Treeview(cls.server_scoreboard, columns=cls.column_name, displaycolumns=cls.column_name)
-        treeview.pack()
+        cls.treeview = tkinter.ttk.Treeview(cls.server_scoreboard, columns=cls.column_name, displaycolumns=cls.column_name)
+        cls.treeview.pack()
 
-        # 각 컬럼 설정. 컬럼 이름, 컬럼 넓이, 정렬 등
+        sort_as = Label(cls.server_scoreboard, text="Sorted by ID")
+        sort_as.pack()
+
+        refresh_button = Button(cls.server_scoreboard, text="refresh", command=cls.refresh_table)
+        refresh_button.pack()
+
+        cls.treeview.column("#0", width=50, )
+        cls.treeview.heading("#0", text="rank", command=lambda: cls.re_sort(0))
+        cls.treeview.column("#1", width=100, )
+        cls.treeview.heading("#1", text="ID", command=lambda: cls.re_sort(1))
         for ind, now_name in enumerate(cls.column_name):
-            treeview.column("#"+str(ind), width=50, )
-            treeview.heading("#"+str(ind), text=now_name)
+            if ind:
+                cls.treeview.column("#"+str(ind+1), width=70, )
+                cls.treeview.heading("#"+str(ind+1), text=now_name, command=lambda: cls.re_sort(ind+1))
 
-        # 표에 삽입될 데이터
-        treelist = [tuple(val) for val in cls.server_scoreboard_file]
+        for i in range(len(cls.server_scoreboard_file)):
+            cls.treeview.insert('', 'end', text=i, values=tuple(cls.server_scoreboard_file[i]), iid=str(i) + "번")
 
-        # 표에 데이터 삽입
-        for i in range(len(treelist)):
-            treeview.insert('', 'end', text=i, values=treelist[i], iid=str(i) + "번")
+    @classmethod
+    def re_sort(cls, index):
+        cls.now_sort_index = index
+        cls.server_scoreboard_file.sort(key=lambda val: val[index])
+        cls.update()
+
+
+    @classmethod
+    def refresh_table(cls):
+        Person_Database.get_server_scoreboard()
+        cls.server_scoreboard_file = Person_Database.receive_message("get_server_scoreboard")
+        cls.re_sort(cls.now_sort_index)
+
+    @classmethod
+    def update(cls):
+        cls.treeview.delete(*cls.treeview.get_children())
+        for i in range(len(cls.server_scoreboard_file)):
+            cls.treeview.insert('', 'end', text=i, values=tuple(cls.server_scoreboard_file[i]), iid=str(i) + "번")
 
 
 class Person_Database:
