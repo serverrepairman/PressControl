@@ -44,6 +44,7 @@ class PersonServer:
                 start_new_thread(cls.parse_data, (data, address))
 
             except ConnectionResetError as e:
+                PersonDatabase.now_login_id.pop(address)
                 print('Disconnected by ' + address[0], ':', address[1])
                 break
 
@@ -70,6 +71,7 @@ class PersonDatabase:
     json_path = './clients.json'
     stage_name = ["peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
     now_user = {}
+    now_login_id = {}
 
     def __init__(self):
         pass
@@ -93,7 +95,10 @@ class PersonDatabase:
             return "database error"
         for x in cls.clients:
             if x["ID"] == ID and x["password"] == passwd_in:
+                if ID in cls.now_login_id.values():
+                    return "Someone already loged in"
                 cls.now_user[address] = x
+                cls.now_login_id[address] = ID
                 return True
         return "invalid ID/Password"
 
