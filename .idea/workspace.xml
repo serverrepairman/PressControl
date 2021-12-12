@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 8.5">
+    <list default="true" id="80467b93-8f80-41ec-a5cd-9f65326859d7" name="Default Changelist" comment="version 8.6">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Classes.py" beforeDir="false" afterPath="$PROJECT_DIR$/Classes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/clients.json" beforeDir="false" afterPath="$PROJECT_DIR$/clients.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,14 +133,7 @@
       <option name="presentableId" value="Default" />
       <updated>1638885018259</updated>
       <workItem from="1639196097942" duration="21446000" />
-      <workItem from="1639281058075" duration="14316000" />
-    </task>
-    <task id="LOCAL-00002">
-      <created>1638944196609</created>
-      <option name="number" value="00002" />
-      <option name="presentableId" value="LOCAL-00002" />
-      <option name="project" value="LOCAL" />
-      <updated>1638944196609</updated>
+      <workItem from="1639281058075" duration="16186000" />
     </task>
     <task id="LOCAL-00003" summary="version 1">
       <created>1638944286455</created>
@@ -479,7 +471,14 @@
       <option name="project" value="LOCAL" />
       <updated>1639292924275</updated>
     </task>
-    <option name="localTasksCounter" value="51" />
+    <task id="LOCAL-00051" summary="version 8.6">
+      <created>1639296581266</created>
+      <option name="number" value="00051" />
+      <option name="presentableId" value="LOCAL-00051" />
+      <option name="project" value="LOCAL" />
+      <updated>1639296581266</updated>
+    </task>
+    <option name="localTasksCounter" value="52" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -522,6 +521,7 @@
     <MESSAGE value="version 8.3" />
     <MESSAGE value="version 8.4" />
     <MESSAGE value="version 8.5" />
-    <option name="LAST_COMMIT_MESSAGE" value="version 8.5" />
+    <MESSAGE value="version 8.6" />
+    <option name="LAST_COMMIT_MESSAGE" value="version 8.6" />
   </component>
 </project>

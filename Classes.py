@@ -295,6 +295,7 @@ class Score:
         parent.title('Score Board')
         self.font = tkFont.Font(family="Lucida Grande", size=30)
         self.text_score = tk.StringVar()
+        Person_Database.new_score(self.stage_num, 1)
         Person_Database.get_max_score(self.stage_num)
         Score.max_score = Person_Database.receive_message("get_max_score")
         self.label_score = Label(parent,
@@ -551,7 +552,7 @@ class ServerScoreBoard:
         cls.server_scoreboard = tkinter.Toplevel(cls.root)
         cls.server_scoreboard.title('Server ScoreBoard')
         cls.server_scoreboard.geometry("700x300+100+100")
-        cls.server_scoreboard.resizable(False, False)
+        cls.server_scoreboard.resizable(False, True)
 
         title = tkinter.Label(cls.server_scoreboard, text="Global ScoreBoard")
         title.pack()
@@ -581,6 +582,8 @@ class ServerScoreBoard:
         cls.treeview.heading("#6", text=cls.column_name[5], command=lambda: cls.re_sort(5))
         cls.treeview.column("#7", width=70, )
         cls.treeview.heading("#7", text=cls.column_name[6], command=lambda: cls.re_sort(6))
+        cls.treeview.column("#8", width=70, )
+        cls.treeview.heading("#8", text=cls.column_name[7], command=lambda: cls.re_sort(7))
 
 #        for ind, now_name in enumerate(cls.column_name):
 #            if 0 < ind < 6:
