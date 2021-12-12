@@ -130,10 +130,12 @@ class PersonDatabase:
         return cls.now_user[address]["max_score"][cls.stage_name[stage_num]]
 
     @classmethod
-    def get_server_scoreboard(cls, address, stage_num):
+    def get_server_scoreboard(cls, address):
         server_scoreboard = []
         for x in cls.clients:
-            server_scoreboard.append((x["ID"], x["max_score"][cls.stage_name[stage_num]]))
+            x_score = [x["ID"]]
+            x_score.extend(reversed(x["max_score"].values()))
+            server_scoreboard.append(x_score)
         return server_scoreboard
 
     @classmethod

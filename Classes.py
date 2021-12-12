@@ -538,6 +538,8 @@ class ServerScoreBoard:
     root = None
     stage_num = None
     server_scoreboard = None
+    server_scoreboard_file = None
+    column_name = ["ID", "peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
 
     @classmethod
     def make_frame(cls, root, stage_num):
@@ -550,28 +552,20 @@ class ServerScoreBoard:
         cls.server_scoreboard.geometry("540x300+100+100")
         cls.server_scoreboard.resizable(False, False)
 
-        lbl = tkinter.Label(cls.server_scoreboard, text="Class Notice")
+        lbl = tkinter.Label(cls.server_scoreboard, text="Global ScoreBoard")
         lbl.pack()
 
         # ﻿표 생성하기. colums는 컬럼 이름, displaycolums는 실행될 때 보여지는 순서다.
-        treeview = tkinter.ttk.Treeview(cls.server_scoreboard, columns=["one", "two", "three"], displaycolumns=["one", "two", "three"])
+        treeview = tkinter.ttk.Treeview(cls.server_scoreboard, columns=cls.column_name, displaycolumns=cls.column_name)
         treeview.pack()
 
         # 각 컬럼 설정. 컬럼 이름, 컬럼 넓이, 정렬 등
-        treeview.column("#0", width=100, )
-        treeview.heading("#0", text="index")
-
-        treeview.column("#1", width=100, anchor="center")
-        treeview.heading("one", text="name", anchor="center")
-
-        treeview.column("#2", width=100, anchor="center")
-        treeview.heading("two", text="score", anchor="center")
-
-        treeview.column("#3", width=70, anchor="center")
-        treeview.heading("three", text="rank", anchor="center")
+        for ind, now_name in enumerate(cls.column_name):
+            treeview.column("#"+str(ind), width=50, )
+            treeview.heading("#"+str(ind), text=now_name)
 
         # 표에 삽입될 데이터
-        treelist = [("Tom", 80, 3), ("Bani", 71, 5), ("Boni", 90, 2), ("Dannel", 78, 4), ("Minho", 93, 1)]
+        treelist = [tuple(val) for val in cls.server_scoreboard_file]
 
         # 표에 데이터 삽입
         for i in range(len(treelist)):
