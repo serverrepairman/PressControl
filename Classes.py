@@ -568,22 +568,34 @@ class ServerScoreBoard:
         cls.treeview.column("#0", width=50, )
         cls.treeview.heading("#0", text="rank")
         cls.treeview.column("#1", width=100, )
-        cls.treeview.heading("#1", text="ID", command=lambda: cls.re_sort(0, "ID"))
-        for ind, now_name in enumerate(cls.column_name):
-            if ind > 0:
-                cls.treeview.column("#"+str(ind+1), width=70, )
-                cls.treeview.heading("#"+str(ind+1), text=now_name, command=lambda: cls.re_sort(ind, now_name))
-                print(ind, now_name)
+        cls.treeview.heading("#1", text="ID", command=lambda: cls.re_sort(0))
+        cls.treeview.column("#2", width=70, )
+        cls.treeview.heading("#2", text=cls.column_name[1], command=lambda: cls.re_sort(1))
+        cls.treeview.column("#3", width=70, )
+        cls.treeview.heading("#3", text=cls.column_name[2], command=lambda: cls.re_sort(2))
+        cls.treeview.column("#4", width=70, )
+        cls.treeview.heading("#4", text=cls.column_name[3], command=lambda: cls.re_sort(3))
+        cls.treeview.column("#5", width=70, )
+        cls.treeview.heading("#5", text=cls.column_name[4], command=lambda: cls.re_sort(4))
+        cls.treeview.column("#6", width=70, )
+        cls.treeview.heading("#6", text=cls.column_name[5], command=lambda: cls.re_sort(5))
+        cls.treeview.column("#7", width=70, )
+        cls.treeview.heading("#7", text=cls.column_name[6], command=lambda: cls.re_sort(6))
 
-        for i in range(len(cls.server_scoreboard_file)):
-            cls.treeview.insert('', 'end', text=i, values=tuple(cls.server_scoreboard_file[i]), iid=str(i) + "번")
+#        for ind, now_name in enumerate(cls.column_name):
+#            if 0 < ind < 6:
+#                cls.treeview.column("#"+str(ind+1), width=70, )
+#                cls.treeview.heading("#"+str(ind+1), text=now_name, command=lambda: cls.re_sort(ind))
+#                print(ind, now_name)
+
+        cls.re_sort(0)
 
     @classmethod
-    def re_sort(cls, index, now_name):
-        print(index, now_name)
+    def re_sort(cls, index):
+        print(index)
         cls.now_sort_index = index
         cls.server_scoreboard_file.sort(key=lambda val: (val[index], val[0]), reverse=True)
-        cls.sort_as.config(text="Sorted by " + now_name)
+        cls.sort_as.config(text="Sorted by " + cls.column_name[index])
         cls.update()
 
 
