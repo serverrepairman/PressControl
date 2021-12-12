@@ -302,8 +302,6 @@ class Score:
                                       'Max Score : ' + str(self.max_score) + '\n'
                                       'Score : ' + str(self.score), font=self.font)
         self.label_score.pack()
-        self.server_score_board = Button(parent, text="Server ScoreBoard", command=lambda : ServerScoreBoard.make_frame(parent, self.stage_num))
-        self.server_score_board.pack()
 
     @classmethod
     def game_start(cls, root, stage_num):
@@ -525,6 +523,8 @@ class StageSelect:
         for ind in range(7):
             Radiobutton(cls.select_frame, text=cls.stage_name[ind], value=ind, variable=cls.stage_num).pack()
         Button(cls.select_frame, text="Game Start", command=cls.button_clicked).pack()
+        cls.server_score_board = Button(cls.select_frame, text="Server ScoreBoard",
+                                         command=lambda: ServerScoreBoard.make_frame(cls.root))
 
         cls.select_frame.pack()
 
@@ -536,16 +536,14 @@ class StageSelect:
 
 class ServerScoreBoard:
     root = None
-    stage_num = None
     server_scoreboard = None
     server_scoreboard_file = None
     column_name = ["ID", "peaceful", "easy", "normal", "hard", "very hard", "hardcore", "hell"]
 
     @classmethod
-    def make_frame(cls, root, stage_num):
+    def make_frame(cls, root):
         cls.root = root
-        cls.stage_num = stage_num
-        Person_Database.get_server_scoreboard(cls.stage_num)
+        Person_Database.get_server_scoreboard()
         cls.server_scoreboard_file = Person_Database.receive_message("get_server_scoreboard")
         cls.server_scoreboard = tkinter.Toplevel(cls.root)
         cls.server_scoreboard.title('Server ScoreBoard')
@@ -605,8 +603,8 @@ class Person_Database:
         cls.send_message("get_max_score", stage_num)
 
     @classmethod
-    def get_server_scoreboard(cls, stage_num):
-        cls.send_message("get_server_scoreboard", stage_num)
+    def get_server_scoreboard(cls):
+        cls.send_message("get_server_scoreboard")
 
     @classmethod
     def clear_database(cls):
