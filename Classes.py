@@ -1,3 +1,4 @@
+import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
@@ -213,7 +214,6 @@ class GameButton:
             return
         if abs(self.root.player_.x - self.x) < (self.width + self.root.player_.width) / 2 and \
                 abs(self.root.player_.y - self.y) < (self.height + self.root.player_.height) / 2:
-            print(self.root.index, self.command.__name__)
             self.clicked()
 
     def clicked(self):
@@ -297,12 +297,13 @@ class Score:
         self.text_score = tk.StringVar()
         Person_Database.get_max_score(self.stage_num)
         Score.max_score = Person_Database.receive_message("get_max_score")
-        print(Score.max_score)
         self.label_score = Label(parent,
                                  text=StageSelect.stage_name[self.stage_num] + '\n'
                                       'Max Score : ' + str(self.max_score) + '\n'
                                       'Score : ' + str(self.score), font=self.font)
         self.label_score.pack()
+        self.server_score_board = Button(parent, text="Server ScoreBoard", command=lambda : ServerScoreBoard.make_frame(parent, self.stage_num))
+        self.server_score_board.pack()
 
     @classmethod
     def game_start(cls, root, stage_num):
@@ -315,9 +316,7 @@ class Score:
     def new_stage(cls):
         cls.score = len(cls.stages) + 1
         Person_Database.new_score(cls.stage_num, cls.score)
-        print(cls.max_score, cls.score)
         cls.max_score = max(cls.score, cls.max_score)
-        print(cls.max_score)
         next_stage = GameWindow(cls.stages[-1], Score.score, cls.stage_num)
         Score.stages.append(next_stage)
         next_stage.title('stage' + str(Score.score))
@@ -365,6 +364,7 @@ class LoginPage:
         # window
         self.root = root
         self.root.geometry(str(LoginPage.width) + 'x' + str(LoginPage.height))
+        self.root.title('LoginPage')
         self.frame_login = None
         self.frame_register = None
         self.make_login_frame()
@@ -449,9 +449,12 @@ class LoginPage:
         pwd = hashlib.sha256()
         pwd.update(password.get().encode('utf-8'))
 
-        try_login = Person_Database.login(username.get(), pwd.hexdigest())
+        Person_Database.login(username.get(), pwd.hexdigest())
+        try_login = Person_Database.receive_message("login")
+
         if try_login is True:
             self.make_status_frame()
+            self.root.title('StageSelect')
             StageSelect.make_select_frame(self.root)
         else:
             self.println(try_login)
@@ -462,7 +465,8 @@ class LoginPage:
         pwd_again = hashlib.sha256()
         pwd_again.update(password_again.get().encode('utf-8'))
 
-        try_register = Person_Database.register(username.get(), pwd.hexdigest(), pwd_again.hexdigest())
+        Person_Database.register(username.get(), pwd.hexdigest(), pwd_again.hexdigest())
+        try_register = Person_Database.receive_message("register")
         if try_register is True:
             self.println("success")
             self.make_login_frame()
@@ -515,7 +519,7 @@ class StageSelect:
     def make_select_frame(cls, root):
         cls.root = root
         cls.root.geometry('200x400')
-        cls.select_frame = LabelFrame(cls.root, text='Login')
+        cls.select_frame = LabelFrame(cls.root, text='StageSelect')
         cls.stage_num = IntVar()
 
         for ind in range(7):
@@ -528,6 +532,50 @@ class StageSelect:
     def button_clicked(cls):
         cls.select_frame.pack_forget()
         GameMain.game_start(cls.root, cls.stage_num.get())
+
+
+class ServerScoreBoard:
+    root = None
+    stage_num = None
+    server_scoreboard = None
+
+    @classmethod
+    def make_frame(cls, root, stage_num):
+        cls.root = root
+        cls.stage_num = stage_num
+        Person_Database.get_server_scoreboard(cls.stage_num)
+        cls.server_scoreboard_file = Person_Database.receive_message("get_server_scoreboard")
+        cls.server_scoreboard = tkinter.Toplevel(cls.root)
+        cls.server_scoreboard.title('Server ScoreBoard')
+        cls.server_scoreboard.geometry("540x300+100+100")
+        cls.server_scoreboard.resizable(False, False)
+
+        lbl = tkinter.Label(cls.server_scoreboard, text="Class Notice")
+        lbl.pack()
+
+        # ﻿표 생성하기. colums는 컬럼 이름, displaycolums는 실행될 때 보여지는 순서다.
+        treeview = tkinter.ttk.Treeview(cls.server_scoreboard, columns=["one", "two", "three"], displaycolumns=["one", "two", "three"])
+        treeview.pack()
+
+        # 각 컬럼 설정. 컬럼 이름, 컬럼 넓이, 정렬 등
+        treeview.column("#0", width=100, )
+        treeview.heading("#0", text="index")
+
+        treeview.column("#1", width=100, anchor="center")
+        treeview.heading("one", text="name", anchor="center")
+
+        treeview.column("#2", width=100, anchor="center")
+        treeview.heading("two", text="score", anchor="center")
+
+        treeview.column("#3", width=70, anchor="center")
+        treeview.heading("three", text="rank", anchor="center")
+
+        # 표에 삽입될 데이터
+        treelist = [("Tom", 80, 3), ("Bani", 71, 5), ("Boni", 90, 2), ("Dannel", 78, 4), ("Minho", 93, 1)]
+
+        # 표에 데이터 삽입
+        for i in range(len(treelist)):
+            treeview.insert('', 'end', text=i, values=treelist[i], iid=str(i) + "번")
 
 
 class Person_Database:
@@ -549,12 +597,10 @@ class Person_Database:
     @classmethod
     def login(cls, ID, passwd_in):
         cls.send_message("login", ID, passwd_in)
-        return cls.receive_message("login")
 
     @classmethod
     def register(cls, ID, passwd_in, passwd_again):
         cls.send_message("register", ID, passwd_in, passwd_again)
-        return cls.receive_message("register")
 
     @classmethod
     def new_score(cls, stage_num, now_score):
@@ -563,6 +609,10 @@ class Person_Database:
     @classmethod
     def get_max_score(cls, stage_num):
         cls.send_message("get_max_score", stage_num)
+
+    @classmethod
+    def get_server_scoreboard(cls, stage_num):
+        cls.send_message("get_server_scoreboard", stage_num)
 
     @classmethod
     def clear_database(cls):
@@ -603,10 +653,11 @@ class Server_Connect:
 
     @classmethod
     def receive(cls, *args):
-        print("receive")
+        print("receiving...")
         while True:
             data = cls.client_socket.recv(1024)
             data_json = json.loads(data.decode())
+            print(data_json["command"] + 'received. parsing...')
             if data_json["command"] in cls.request_queue:
                 cls.request_queue[data_json["command"]].append(data_json["message"])
             else:
